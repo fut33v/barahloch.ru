@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ seller.full_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'sellers/style.css' %}">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+</head>
+<body>
+
+<h1>{{ seller.full_name }} | {{ seller.city }}</h1>
+
+<div class="wrapper">
+    {% for g in goods %}
+    <div class="box">
+        <img width="420" src="{{ g.photo_link }}"/>
+        <br/>
+        <b>Фото: </b>
+        <a href="https://vk.com/photo{{ g.vk_photo_id }}">https://vk.com/photo{{ g.vk_photo_id }}</a>
+        <br/>
+        <b>Описание: </b>
+        <p> {{ g.descr }} </p>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

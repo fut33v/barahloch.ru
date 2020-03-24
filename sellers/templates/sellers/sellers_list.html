@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Продавцы</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'sellers/style.css' %}">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+</head>
+<body>
+
+<div class="wrapper">
+    {% for s in sellers %}
+    <div class="seller box">
+        <img src="{{ s.photo }}" class="seller-photo"/>
+        <ul class="seller-list">
+            <li><b>{{ s.full_name }}</b></li>
+            <li><a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a></li>
+            <li><a href="{% url 'seller_detail' pk=s.vk_id %}">История</a></li>
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
