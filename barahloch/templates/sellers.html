@@ -1,0 +1,30 @@
+
+<div class="container">
+    <div class="row row-cols-3">
+        {% for s in sellers %}
+        {% if forloop.counter0|divisibleby:3 %}
+    </div>
+    <br>
+    <div class="row row-cols-3">
+    {% endif %}
+    <div class="col-sd-4">
+        <div class="card seller">
+            <div class="card-body">
+                <img src="{{ s.photo }}" class="seller-photo rounded-circle"/>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <b>{{ s.first_name }} {{ s.last_name }}</b>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>

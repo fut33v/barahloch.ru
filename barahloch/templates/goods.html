@@ -1,0 +1,53 @@
+{% if pagination %}
+    {% include "pagination.html" with page=goods %}
+{% endif %}
+
+{% if goods %}
+<div class="container">
+    <div class="row row-cols-3">
+        {% for g in goods %}
+        {% if forloop.counter0|divisibleby:3 %}
+    </div><br><div class="row row-cols-3">
+    {% endif %}
+    <div class="col-4">
+        <div class="card good">
+            <div class="card-body">
+                <h5 class="card-title"><b> {{ g.date }} </b></h5>
+                <p class="card-text">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <img class="good-img" src="{{ g.photo_link }}"/>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="https://t.me/{{channel}}/{{ g.tg_post_id }}" target="_blank"><b>Telegram пост</b></a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="/goods/hash/{{g.hash}}" target="_blank"><b>такие же по хэшу</b></a>
+                        </li>
+                        {% if g.descr %}
+                        <li class="list-group-item">
+                            <b>Описание: </b>
+                <p> {{ g.descr }} </p>
+                </li>
+                {% endif %}
+                {% if g.comments %}
+                <li class="list-group-item">
+                    <b>Комментарии: </b>
+                    <p> {{ g.comments }} </p>
+                </li>
+                {% endif %}
+                </ul>
+
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+</div>
+{% endif %}
+
+{% if pagination %}
+    {% include "pagination.html" with page=goods %}
+{% endif %}

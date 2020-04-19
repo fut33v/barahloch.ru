@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+{% include "head.html" with title="Продавцы" %}
+
+<body>
+
+    {% include "header.html" %}
+
+    <div class ="content">
+        {% include "pagination.html" with page=sellers %}
+
+        {% include "sellers.html" with sellers=sellers %}
+    </div>
+
+</body>
+</html>

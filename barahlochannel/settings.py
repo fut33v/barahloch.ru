@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sellers'
+    'barahloch'
 ]
 
 MIDDLEWARE = [
@@ -77,6 +77,10 @@ DATABASES = {
         'OPTIONS': {
             'read_default_file': '/etc/mysql/my.cnf',
         },
+        'NAME': 'barahlochannel',
+        'USER': 'fut33v',
+        'PASSWORD': '',
+        'HOST': 'localhost',
     }
 }
 

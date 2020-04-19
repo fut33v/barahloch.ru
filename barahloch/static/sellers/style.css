@@ -1,0 +1,45 @@
+body {
+  margin: 40px;
+  padding: 20px 40px 40px 40px;
+}
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.content {
+    margin: 20px;
+}
+
+.seller-photo {
+    float: left;
+    width: 200px;
+}
+
+.seller-list {
+    list-style-type:none;
+    float: right;
+    text-align: right;
+}
+
+.good {
+    height: 100%
+}
+
+.good-img {
+    width: 100%;
+}
+
+.seller {
+    margin: 5px;
+}
+
+.pagination-container{
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+}
