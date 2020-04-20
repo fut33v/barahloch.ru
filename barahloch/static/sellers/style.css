@@ -32,6 +32,15 @@ header {
     width: 100%;
 }
 
+.album-img {
+    width: 228px;
+    height: 228px;
+}
+
+.album {
+    height: 100%
+}
+
 .seller {
     margin: 5px;
 }

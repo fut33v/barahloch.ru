@@ -11,8 +11,8 @@
 
     <div class ="content">
         {% include "pagination.html" with page=sellers %}
-
         {% include "sellers.html" with sellers=sellers %}
+        {% include "pagination.html" with page=sellers %}
     </div>
 
 </body>

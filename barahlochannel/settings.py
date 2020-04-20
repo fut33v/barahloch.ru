@@ -24,7 +24,7 @@ SECRET_KEY = '!l11lh4p6@vi2g(vt(&0tf7k1wz9jfx+yc(s8g%=!pnajrj73a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['barahloch.ru']
 
 # Application definition
 
