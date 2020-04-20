@@ -43,38 +43,35 @@
 
 <div class ="content">
     {% if albums %}
-    <div class="container">
-        <div class="row row-cols-3">
+    <div class="container-fluid">
+        <div class="row row-cols-5">
             {% for a in albums %}
             {% if forloop.counter0|divisibleby:3 %}
         </div><br><div class="row row-cols-3">
         {% endif %}
         <div class="col-4">
                 <div class="card album">
-                    <div class="card-body">
-                            <div class="card-title">
-                                <h4> {{a.group_name}} </h4>
-                                <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
-                                <h5><b> {{ a.title }} </b></h5>
-                                </a>
+                    <div class="card-body row">
+                            <div class="col-4">
+                                <div class="album-img " style="background-image:url('{{a.photo}}')"></div>
                             </div>
-                            <p class="card-text">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        {% if a.description %}
-                                            <img class="album-img rounded-circle" src="{{ a.photo }}" data-toggle="tooltip" data-placement="top" title="{{a.description}}"/>
-                                            {% else %}
-                                            <img class="album-img rounded-circle" src="{{ a.photo }}"/>
-                                        {% endif %}
-
-                                    </li>
-                                </ul>
-                            </p>
+                            <ul class="list-group list-group-flush col">
+                                <li class="list-group-item">
+                                    <h4> {{a.group_name}} </h4>
+                                    <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
+                                        <h5><b> {{ a.title }} </b></h5>
+                                    </a>
+                                </li>
+                                {% if a.description %}
+                                <li class="list-group-item">
+                                    <p>{{a.description}}</p>
+                                </li>
+                                {% endif %}
+                            </ul>
                     </div>
                 </div>
         </div>
         {% endfor %}
-
     </div>
     </div>
     {% endif %}

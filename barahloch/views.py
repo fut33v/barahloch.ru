@@ -22,7 +22,7 @@ def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
     sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods)
 
-    paginator = Paginator(sellers, 3*30)
+    paginator = Paginator(sellers, 3*40)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

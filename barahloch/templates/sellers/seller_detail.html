@@ -11,11 +11,15 @@
 {% include "header.html" %}
 
 <div class="content">
-
     <div class="card seller">
         <div class="card-body">
-            <img src="{{ seller.photo }}" class="seller-photo rounded-circle"/>
-            <ul class="list-group list-group-flush">
+            <div class="row">
+
+            <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
+
+            <ul class="col list-group list-group-flush">
+<!--                <li class="list-group-item">-->
+<!--                </li>-->
                 <li class="list-group-item">
                     <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
                 </li>
@@ -28,6 +32,7 @@
                 </li>
                 {% endif %}
             </ul>
+            </div>
         </div>
     </div>
 

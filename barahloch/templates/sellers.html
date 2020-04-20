@@ -1,27 +1,32 @@
 
-<div class="container">
-    <div class="row row-cols-3">
+<div class="container-fluid">
+    <div class="row row-cols-4">
         {% for s in sellers %}
-        {% if forloop.counter0|divisibleby:3 %}
+        {% if forloop.counter0|divisibleby:4 %}
     </div>
     <br>
-    <div class="row row-cols-3">
+    <div class="row row-cols-4">
     {% endif %}
-    <div class="col-sd-4">
+    <div class="col-sd-3">
         <div class="card seller">
             <div class="card-body">
-                <img src="{{ s.photo }}" class="seller-photo rounded-circle"/>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <b>{{ s.first_name }} {{ s.last_name }}</b>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
-                    </li>
-                </ul>
+                <div class="row">
+                    <img src="{{ s.photo }}" class="seller-photo rounded-circle col-5"/>
+                    <ul class="list-group list-group-flush col">
+<!--                        <li class="list-group-item">-->
+<!--                            <img src="{{ s.photo }}" class="seller-photo rounded-circle"/>-->
+<!--                        </li>-->
+                        <li class="list-group-item">
+                            <b>{{ s.first_name }} {{ s.last_name }}</b>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

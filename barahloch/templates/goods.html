@@ -3,8 +3,8 @@
 {% endif %}
 
 {% if goods %}
-<div class="container">
-    <div class="row row-cols-3">
+<div class="container-fluid">
+    <div class="row row-cols-4">
         {% for g in goods %}
         {% if forloop.counter0|divisibleby:3 %}
     </div><br><div class="row row-cols-3">
