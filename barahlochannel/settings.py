@@ -19,7 +19,7 @@ class ChannelEnum(Enum):
     MTB = 1
 
 
-CHANNEL = ChannelEnum.MTB
+CHANNEL = ChannelEnum.FIX_SHOSSE
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,9 +31,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!l11lh4p6@vi2g(vt(&0tf7k1wz9jfx+yc(s8g%=!pnajrj73a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', '127.0.0.1']
+ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -130,6 +130,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SILENCED_SYSTEM_CHECKS = ['mysql.E001']
-
-ADMIN_ENABLED = False
-
