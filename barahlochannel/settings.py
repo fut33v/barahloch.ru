@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from enum import Enum
+
+
+class ChannelEnum(Enum):
+    FIX_SHOSSE = 0,
+    MTB = 1
+
+
+CHANNEL = ChannelEnum.MTB
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +33,7 @@ SECRET_KEY = '!l11lh4p6@vi2g(vt(&0tf7k1wz9jfx+yc(s8g%=!pnajrj73a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['barahloch.ru', '127.0.0.1']
+ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', '127.0.0.1']
 
 # Application definition
 
