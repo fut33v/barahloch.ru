@@ -29,7 +29,6 @@ ALLOWED_HOSTS = ['barahloch.ru', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -122,3 +121,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SILENCED_SYSTEM_CHECKS = ['mysql.E001']
+
+ADMIN_ENABLED = False
+
