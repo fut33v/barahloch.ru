@@ -22,13 +22,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!l11lh4p6@vi2g(vt(&0tf7k1wz9jfx+yc(s8g%=!pnajrj73a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['barahloch.ru', '127.0.0.1']
+ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', 'localhost', '127.0.0.1']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -121,6 +122,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SILENCED_SYSTEM_CHECKS = ['mysql.E001']
-
-ADMIN_ENABLED = False
-
