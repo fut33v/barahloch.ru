@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from enum import Enum
+
+
+class ChannelEnum(Enum):
+    FIX_SHOSSE = 0,
+    MTB = 1
+
+
+CHANNEL = ChannelEnum.FIX_SHOSSE
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +38,6 @@ ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
