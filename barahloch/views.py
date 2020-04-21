@@ -35,7 +35,10 @@ def seller_detail(request, pk):
 
     city = None
     if seller.city_id:
-        city = Cities.objects.get(id=seller.city_id)
+        try:
+            city = Cities.objects.get(id=seller.city_id)
+        except Cities.DoesNotExist:
+            city = None
 
     paginator = Paginator(goods, 1*30)
     channel = _CHANNEL
