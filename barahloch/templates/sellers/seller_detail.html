@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 
 {% load static %}
+{% load barahloch_extras %}
 
 <html lang="en">
 
-{% include "head.html" with title=seller.first_name %}
+{% with ""|addstr:seller.first_name|addstr:" "|addstr:seller.last_name as title %}
+    {% include "head.html" %}
+{% endwith %}
 
 <body>
 
@@ -18,15 +21,13 @@
             <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
 
             <ul class="col list-group list-group-flush">
-<!--                <li class="list-group-item">-->
-<!--                </li>-->
                 <li class="list-group-item">
                     <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
                 </li>
                 <li class="list-group-item">
                     <a href="https://vk.com/id{{ seller.vk_id }}">вКонтакте</a>
                 </li>
-                {% if seller.city_id %}
+                {% if city %}
                 <li class="list-group-item">
                     город: <a href="/city/{{city.id}}">{{ city.title }}</a>
                 </li>
@@ -35,14 +36,6 @@
             </div>
         </div>
     </div>
-
-<!--    <h1>-->
-<!--        <img src="{{seller.photo}}" class="rounded-circle"/>-->
-<!--        <a href="https://vk.com/id{{seller.vk_id}}" target="_blank"> {{ seller.first_name }} {{ seller.last_name }}</a>-->
-<!--        {% if city %}-->
-<!--        <span>| <a href="/city/{{city.id}}">{{ city.title }}</a></span>-->
-<!--        {% endif %}-->
-<!--    </h1>-->
 
     {% include "goods.html" with goods=goods %}
 </div>

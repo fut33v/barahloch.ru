@@ -10,70 +10,46 @@
 
 {% include "header.html" %}
 
-<!--    <div class="container">-->
-<!--            {% for g in groups %}-->
-<!--                {% for a in albums %}-->
-<!--                    {% ifequal a.owner_id g.id|neg %}-->
-<!--&lt;!&ndash;                <div class="col-4">&ndash;&gt;-->
-<!--                        <div class="card album">-->
-<!--                            <div class="card-body">-->
-<!--                                <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">-->
-<!--                                    <h5 class="card-title"><b> {{ a.title }} </b></h5>-->
-<!--                                </a>-->
-<!--                                    <p class="card-text">-->
-<!--                                        <ul class="list-group list-group-flush">-->
-<!--                                            <li class="list-group-item">-->
-<!--                                                <img class="album-img rounded-circle" src="{{ a.photo }}"/>-->
-<!--                                            </li>-->
-<!--                                            {% if a.description %}-->
-<!--                                            <li class="list-group-item">-->
-<!--                                                <p> {{ a.description }} </p>-->
-<!--                                            </li>-->
-<!--                                            {% endif %}-->
-<!--                                        </ul>-->
-<!--                                    </p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--&lt;!&ndash;                </div>&ndash;&gt;-->
-<!--                    {% endifequal %}-->
-<!--                {% endfor %}-->
-<!--            </div>-->
-<!--        {% endfor %}-->
-<!--    </div>-->
-
 <div class ="content">
     {% if albums %}
+
     <div class="container-fluid">
-        <div class="row row-cols-5">
+        <div class="row row-cols-4">
             {% for a in albums %}
-            {% if forloop.counter0|divisibleby:3 %}
-        </div><br><div class="row row-cols-3">
-        {% endif %}
-        <div class="col-4">
-                <div class="card album">
-                    <div class="card-body row">
-                            <div class="col-4">
-                                <div class="album-img " style="background-image:url('{{a.photo}}')"></div>
-                            </div>
-                            <ul class="list-group list-group-flush col">
-                                <li class="list-group-item">
-                                    <h4> {{a.group_name}} </h4>
-                                    <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
-                                        <h5><b> {{ a.title }} </b></h5>
-                                    </a>
-                                </li>
-                                {% if a.description %}
-                                <li class="list-group-item">
-                                    <p>{{a.description}}</p>
-                                </li>
-                                {% endif %}
-                            </ul>
+            {% if forloop.counter0|divisibleby:4 %}
+        </div>
+        <br>
+        <div class="row row-cols-4">
+            {% endif %}
+            <div class="col-sd-3">
+                <div class=" seller">
+                    <div class="row">
+                        <ul class="list-group list-group-flush col">
+                            <li class="list-group-item">
+                                <h4 class="card-title"> {{a.group_name}} </h4>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="album-img" style="background-image:url('{{a.photo}}')"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
+                                    <h5><b> {{ a.title }} </b></h5>
+                                </a>
+                            </li>
+                            {% if a.description %}
+                            <li class="list-group-item">
+                                <p>{{a.description}}</p>
+                            </li>
+                            {% endif %}
+                        </ul>
+
                     </div>
                 </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-    </div>
+
     {% endif %}
 </div>
 

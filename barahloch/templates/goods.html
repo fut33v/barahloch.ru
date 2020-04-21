@@ -10,19 +10,14 @@
     </div><br><div class="row row-cols-3">
     {% endif %}
     <div class="col-4">
-        <div class="card good">
-            <div class="card-body">
                 <h5 class="card-title"><b> {{ g.date }} </b></h5>
                 <p class="card-text">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <img class="good-img" src="{{ g.photo_link }}"/>
+                            <div class="good-img" style="background-image:url('{{g.photo_link}}')"></div>
                         </li>
                         <li class="list-group-item">
                             <a href="https://t.me/{{channel}}/{{ g.tg_post_id }}" target="_blank"><b>Telegram пост</b></a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="/goods/hash/{{g.hash}}" target="_blank"><b>такие же по хэшу</b></a>
                         </li>
                         {% if g.descr %}
                         <li class="list-group-item">
@@ -39,8 +34,6 @@
                 </ul>
 
                 </p>
-            </div>
-        </div>
     </div>
     {% endfor %}
 
