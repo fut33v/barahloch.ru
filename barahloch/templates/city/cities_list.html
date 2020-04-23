@@ -14,11 +14,11 @@
     <h3>{{cities.count}} городов</h3>
 
     <ul class="list-group list-group-flush">
-    {% for c in cities %}
-    <li class="list-group-item">
-        <a href="/city/{{c.id}}"> <span>{{c.title}}</span> </a>
-    </li>
-    {% endfor %}
+        {% for c in cities %}
+            <li class="list-group-item">
+                <a href="/city/{{c.id}}"> <span>{{c.title}}</span> </a>
+            </li>
+        {% endfor %}
     </ul>
 </div>
 

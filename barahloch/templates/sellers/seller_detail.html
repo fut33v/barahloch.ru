@@ -14,25 +14,23 @@
 {% include "header.html" %}
 
 <div class="content">
-    <div class="card seller">
-        <div class="card-body">
+    <div class="seller">
+        <div>
             <div class="row">
-
-            <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
-
-            <ul class="col list-group list-group-flush">
-                <li class="list-group-item">
-                    <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
-                </li>
-                <li class="list-group-item">
-                    <a href="https://vk.com/id{{ seller.vk_id }}">вКонтакте</a>
-                </li>
-                {% if city %}
-                <li class="list-group-item">
-                    город: <a href="/city/{{city.id}}">{{ city.title }}</a>
-                </li>
-                {% endif %}
-            </ul>
+                <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
+                <div class="col">
+                    <div>
+                        <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
+                    </div>
+                    {% if city %}
+                    <h3>
+                        город: <a href="/city/{{city.id}}">{{ city.title }}</a>
+                    </h3>
+                    {% endif %}
+                    <h2>
+                        <a href="https://vk.com/id{{ seller.vk_id }}">ВКонтакте</a>
+                    </h2>
+                </div>
             </div>
         </div>
     </div>

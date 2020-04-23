@@ -20,9 +20,9 @@ elif settings.CHANNEL == ChannelEnum.MTB:
 
 def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
-    sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods)
+    sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
 
-    paginator = Paginator(sellers, 3*40)
+    paginator = Paginator(sellers, 4*30)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -52,18 +52,6 @@ def seller_detail(request, pk):
 
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
-    return render(request, 'city/city.html', {'city': city})
-
-
-def city_sellers(request, pk):
-    city = get_object_or_404(Cities, pk=pk)
-    sellers_for_goods = _GOODS.objects.values('seller_id')
-    sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
-    return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
-
-
-def city_goods(request, pk):
-    city = get_object_or_404(Cities, pk=pk)
     sellers = Sellers.objects.filter(city_id=pk)
 
     goods = _GOODS.objects.filter(seller_id__in=sellers).order_by('date')
@@ -77,6 +65,13 @@ def city_goods(request, pk):
 
     return render(request, 'city/city_goods.html', {
         'city': city, 'goods': page_obj, 'count': count, 'channel': channel, 'pagination': True})
+
+
+def city_sellers(request, pk):
+    city = get_object_or_404(Cities, pk=pk)
+    sellers_for_goods = _GOODS.objects.values('seller_id')
+    sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
+    return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
 
 
 def goods_hash(request, photo_hash):
@@ -106,8 +101,16 @@ def albums_list(request):
     groups = Groups.objects.filter(id__in=owners)
 
     for a in albums:
-        for g in groups:
-            if -a.owner_id == g.id:
-                a.group_name = g.name
+        if a.owner_id < 0:
+            for g in groups:
+                if -a.owner_id == g.id:
+                    a.owner_name = g.name
+        else:
+            try:
+                seller = Sellers.objects.get(vk_id=a.owner_id)
+            except Sellers.DoesNotExist:
+                seller = None
+            if seller:
+                a.owner_name = seller.first_name + ' ' + seller.last_name
 
     return render(request, 'albums/albums_list.html', {'albums': albums, 'groups': groups})

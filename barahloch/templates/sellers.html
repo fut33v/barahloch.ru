@@ -1,22 +1,36 @@
+{% load barahloch_extras %}
 
 <div class="container-fluid">
-    <div class="row row-cols-4">
+    <div class="row row-cols-3">
         {% for s in sellers %}
-        {% if forloop.counter0|divisibleby:4 %}
+        {% if forloop.counter0|divisibleby:3 %}
     </div>
     <br>
-    <div class="row row-cols-4">
+    <div class="row row-cols-3">
     {% endif %}
-    <div class="col-sd-3">
+    <div class="col-sd-4">
         <div class=" seller">
                 <div class="row">
                     <img src="{{ s.photo }}" class="seller-photo rounded-circle col-5"/>
                     <ul class="list-group list-group-flush col">
                         <li class="list-group-item">
-                            <b>{{ s.first_name }} {{ s.last_name }}</b>
+                            {% if s.is_group %}
+                            <h5>{{ s.first_name }}</h5>
+                            {% else %}
+                            <h5>{{ s.first_name }} {{ s.last_name }}</h5>
+                            {% endif %}
                         </li>
+                        {% if s.city %}
                         <li class="list-group-item">
+                            <a href="{% url 'city_page' pk=s.city.id %}">{{s.city.title}}</a>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item">
+                            {% if s.is_group %}
+                            <a href="https://vk.com/public{{ s.vk_id|neg }}">вКонтакте</a>
+                            {% else %}
                             <a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a>
+                            {% endif %}
                         </li>
                         <li class="list-group-item">
                             <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>

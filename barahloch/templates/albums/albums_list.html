@@ -14,34 +14,30 @@
     {% if albums %}
 
     <div class="container-fluid">
-        <div class="row row-cols-4">
+        <div class="row row-cols-3">
             {% for a in albums %}
-            {% if forloop.counter0|divisibleby:4 %}
+            {% if forloop.counter0|divisibleby:3 %}
         </div>
         <br>
-        <div class="row row-cols-4">
+        <div class="row row-cols-3">
             {% endif %}
-            <div class="col-sd-3">
-                <div class=" seller">
+            <div class="col-4">
+                <div class="">
                     <div class="row">
-                        <ul class="list-group list-group-flush col">
-                            <li class="list-group-item">
-                                <h4 class="card-title"> {{a.group_name}} </h4>
-                            </li>
-                            <li class="list-group-item">
+                        <div class="col">
+                            <div>
                                 <div class="album-img" style="background-image:url('{{a.photo}}')"></div>
-                            </li>
-                            <li class="list-group-item">
+                            </div>
+                            <div>
+                                <b> {{a.owner_name}} </b>
+                                /
                                 <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
-                                    <h5><b> {{ a.title }} </b></h5>
+                                    <b> {{ a.title }} </b>
                                 </a>
-                            </li>
-                            {% if a.description %}
-                            <li class="list-group-item">
-                                <p>{{a.description}}</p>
-                            </li>
-                            {% endif %}
-                        </ul>
+                            </div>
+                            <div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

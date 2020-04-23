@@ -10,30 +10,42 @@
     </div><br><div class="row row-cols-3">
     {% endif %}
     <div class="col-4">
-                <h5 class="card-title"><b> {{ g.date }} </b></h5>
-                <p class="card-text">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="good-img" style="background-image:url('{{g.photo_link}}')"></div>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="https://t.me/{{channel}}/{{ g.tg_post_id }}" target="_blank"><b>Telegram пост</b></a>
-                        </li>
-                        {% if g.descr %}
-                        <li class="list-group-item">
-                            <b>Описание: </b>
-                <p> {{ g.descr }} </p>
-                </li>
+                <h5><b> {{ g.date }} </b></h5>
+                <div>
+                    <p>
+                        <div class="good-img" style="background-image:url('{{g.photo_link}}')"></div>
+                    </p>
+                </div>
+                <div>
+                    {% if show_seller %}
+                    <p>
+                        <b>Продавец: </b>
+                        <a href="https://vk.com/id{{ g.seller.vk_id }}">{{g.seller.first_name}} {{g.seller.last_name}}</a>
+                        |
+                        <a href="{% url 'seller_detail' pk=g.seller.vk_id %}">история</a>
+                    </p>
+                    {% endif %}
+                </div>
+                <div>
+                    <p>
+                        <a href="https://t.me/{{channel}}/{{ g.tg_post_id }}" target="_blank"><b>Telegram</b></a>
+                        |
+                        <a href="https://vk.com/photo{{ g.vk_owner_id }}_{{g.vk_photo_id}}">фото VK</a>
+                        |
+                        <a href="{% url 'goods_hash' photo_hash=g.hash %}">hash</a>
+                    </p>
+                </div>
+                {% if g.descr %}
+                <div>
+                    <p class="text-break"> <b>Описание: </b> {{ g.descr }} </p>
+                </div>
                 {% endif %}
                 {% if g.comments %}
-                <li class="list-group-item">
-                    <b>Комментарии: </b>
-                    <p> {{ g.comments }} </p>
-                </li>
+                <div>
+                    <p class="text-break"> <b>Комментарии: </b> {{ g.comments }} </p>
+                </div>
                 {% endif %}
-                </ul>
 
-                </p>
     </div>
     {% endfor %}
 

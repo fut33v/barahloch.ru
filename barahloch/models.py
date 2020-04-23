@@ -8,36 +8,6 @@
 from django.db import models
 
 
-class Barahl0Albums(models.Model):
-    owner_id = models.BigIntegerField(primary_key=True)
-    album_id = models.BigIntegerField()
-    title = models.CharField(max_length=1024, blank=True, null=True)
-    description = models.CharField(max_length=1024, blank=True, null=True)
-    photo = models.CharField(max_length=1024, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'barahl0_albums'
-        unique_together = (('owner_id', 'album_id'),)
-
-
-class Barahl0Goods(models.Model):
-    vk_owner_id = models.IntegerField(primary_key=True)
-    vk_photo_id = models.IntegerField()
-    photo_link = models.CharField(max_length=1024)
-    seller_id = models.IntegerField()
-    descr = models.CharField(max_length=6666, blank=True, null=True)
-    comments = models.CharField(max_length=1024, blank=True, null=True)
-    tg_post_id = models.IntegerField(blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
-    hash = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'barahl0_goods'
-        unique_together = (('vk_owner_id', 'vk_photo_id'),)
-
-
 class BarahlochannelAlbums(models.Model):
     owner_id = models.BigIntegerField(primary_key=True)
     album_id = models.BigIntegerField()
@@ -55,7 +25,8 @@ class BarahlochannelGoods(models.Model):
     vk_owner_id = models.IntegerField(primary_key=True)
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
-    seller_id = models.IntegerField()
+    #seller_id = models.IntegerField()
+    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)
     tg_post_id = models.IntegerField(blank=True, null=True)
@@ -85,7 +56,8 @@ class BarahlochannelMtbGoods(models.Model):
     vk_owner_id = models.IntegerField(primary_key=True)
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
-    seller_id = models.IntegerField()
+    # seller_id = models.IntegerField()
+    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)
     tg_post_id = models.IntegerField(blank=True, null=True)
@@ -122,8 +94,14 @@ class Sellers(models.Model):
     vk_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=256, blank=True, null=True)
     last_name = models.CharField(max_length=256, blank=True, null=True)
-    city_id = models.IntegerField(blank=True, null=True)
+    # city_id = models.IntegerField(blank=True, null=True)
+    city = models.ForeignKey(Cities, models.DO_NOTHING, blank=True, null=True)
     photo = models.CharField(max_length=1024, blank=True, null=True)
+
+    def is_group(self):
+        if self.vk_id < 0:
+            return True
+        return False
 
     class Meta:
         managed = False

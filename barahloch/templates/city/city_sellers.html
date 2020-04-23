@@ -8,15 +8,19 @@
     {% include "header.html" %}
 
     <div class="content">
-
-        <h1>
-            {{city.title}}
-        </h1>
-        <h2>
-            {{sellers.count}} продавцов
-        </h2>
-
-        <h2>Товары <a href="/city/{{city.id}}/goods">тут</a></h2>
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 text-center">
+                <h1>
+                    {{city.title}}
+                </h1>
+                <h2>
+                    {{sellers.count}} продавцов
+                </h2>
+                <h2>
+                    товары <a href="{% url 'city_page' pk=city.id %}">тут</a>
+                </h2>
+            </div>
+        </div>
 
         {% include "sellers.html" with sellers=sellers %}
 
