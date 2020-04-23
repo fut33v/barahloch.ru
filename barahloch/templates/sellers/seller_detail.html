@@ -20,7 +20,11 @@
                 <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
                 <div class="col">
                     <div>
+                        {% if seller.is_group %}
+                        <h1><b>{{ seller.first_name }}</b></h1>
+                        {% else %}
                         <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
+                        {% endif %}
                     </div>
                     {% if city %}
                     <h3>
@@ -28,7 +32,11 @@
                     </h3>
                     {% endif %}
                     <h2>
+                        {% if seller.is_group %}
+                        <a href="https://vk.com/public{{ seller.vk_id|neg }}">ВКонтакте</a>
+                        {% else %}
                         <a href="https://vk.com/id{{ seller.vk_id }}">ВКонтакте</a>
+                        {% endif %}
                     </h2>
                 </div>
             </div>
