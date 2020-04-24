@@ -12,6 +12,7 @@ header {
 
 .content {
     margin: 20px;
+    font-size: 1.5rem;
 }
 
 .seller-photo {
@@ -42,6 +43,17 @@ header {
 
     width: 100%;
     height: 25vw;
+}
+.good-detail-img-container {
+    height: 40vw;
+}
+.good-detail-img {
+/*
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+*/
+    height: 100%;
 }
 
 .album-img {
@@ -77,4 +89,8 @@ header {
 
 .vk-logo-sellers {
     width: 1vw;
+}
+
+.vk-logo-goods {
+    width: 1.5vw;
 }

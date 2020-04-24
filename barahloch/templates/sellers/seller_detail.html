@@ -25,7 +25,7 @@
                         {% else %}
                         <b>{{ seller.first_name }} {{ seller.last_name }}</b>
                         {% endif %}
-
+                        ({{seller.goods_counter}})
                         {% if seller.is_group %}
                         <a href="https://vk.com/public{{ seller.vk_id|neg }}">
                             <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
@@ -36,8 +36,6 @@
                         </a>
                         {% endif %}
                     </h1>
-<!--                    <h2>-->
-<!--                    </h2>-->
                     {% if city %}
                     <h3>
                         город: <a href="/city/{{city.id}}">{{ city.title }}</a>
@@ -48,7 +46,7 @@
         </div>
     </div>
 
-    {% include "goods.html" with goods=goods %}
+    {% include "goods.html" with goods=goods show_duplicates=True %}
 </div>
 
 </body>

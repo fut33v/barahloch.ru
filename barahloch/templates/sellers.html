@@ -22,6 +22,7 @@
                             {% else %}
                             {{ s.first_name }} {{ s.last_name }}
                             {% endif %}
+                            ({{s.counter}})
                             {% if s.is_group %}
                             <a href="https://vk.com/public{{ s.vk_id|neg }}">
                                 <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
@@ -40,6 +41,9 @@
                         {% endif %}
                         <div>
                             <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
+                        </div>
+                        <div>
+                            <h4></h4>
                         </div>
                     </div>
                 </div>

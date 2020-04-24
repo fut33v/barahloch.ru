@@ -3,11 +3,10 @@
 
 {% with request.resolver_match.view_name as view_name %}
 
-
 <header>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
-    <a class="navbar-brand" href="#">barahloch.ru</a>
+    <a class="navbar-brand" href="/">barahloch.ru</a>
 
 <ul class="navbar-nav mr-auto">
 
@@ -16,7 +15,7 @@
 {% else %}
     <li class="nav-item">
 {% endifequal %}
-        <a class="nav-link" href="/">Товары<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{% url 'goods_list' %}">Товары<span class="sr-only">(current)</span></a>
     </li>
 
 {% ifequal view_name "sellers_list" %}
@@ -24,7 +23,7 @@
 {% else %}
         <li class="nav-item">
 {% endifequal %}
-            <a class="nav-link" href="/sellers">Продавцы<span class="sr-only"></span></a>
+            <a class="nav-link" href="{% url 'sellers_list' %}">Продавцы<span class="sr-only"></span></a>
         </li>
 
 {% ifequal view_name "albums_list" %}
@@ -32,16 +31,25 @@
 {% else %}
         <li class="nav-item">
 {% endifequal %}
-            <a class="nav-link" href="/albums">Альбомы</a>
+            <a class="nav-link" href="{% url 'albums_list' %}">Альбомы</a>
         </li>
 
-    {% ifequal view_name "cities_list" %}
+{% ifequal view_name "cities_list" %}
     <li class="nav-item active">
-        {% else %}
+{% else %}
     <li class="nav-item">
-        {% endifequal %}
-        <a class="nav-link" href="/cities">Города</a>
+{% endifequal %}
+        <a class="nav-link" href="{% url 'cities_list' %}">Города</a>
     </li>
+
+{% ifequal view_name "goods_duplicates" %}
+    <li class="nav-item active">
+{% else %}
+    <li class="nav-item">
+{% endifequal %}
+        <a class="nav-link" href="{% url 'goods_duplicates' %}">Дубликаты</a>
+    </li>
+
 </ul>
 
 <!--    <form class="form-inline my-2 my-lg-0">-->

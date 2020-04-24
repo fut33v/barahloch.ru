@@ -15,6 +15,7 @@ urlpatterns = [
 
     path('goods/hash/<slug:photo_hash>', views.goods_hash, name='goods_hash'),
     path('goods/duplicates', views.goods_duplicates, name='goods_duplicates'),
+    path('goods/<negint:owner_id>_<int:photo_id>', views.good_detail, name='good_detail'),
 
     path('albums', views.albums_list, name='albums_list'),
 ]

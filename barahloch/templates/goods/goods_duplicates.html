@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+
+{% include "head.html" with title="" %}
+
 <body>
+
+{% include "header.html" %}
+
+<div class ="content">
+    {% include "goods.html" with goods=goods show_seller=True show_duplicates=True pagination=True %}
+</div>
 
 </body>
 </html>

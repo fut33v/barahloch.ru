@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+{% include "head.html" with title="" %}
+
+<body>
+
+{% include "header.html" %}
+
+<div class="content">
+    <div class="container-fluid">
+<!--        <div class="row">-->
+        <div>
+            <h5><b> {{ good.date }} </b></h5>
+            <div class="good-detail-img-container" >
+                <img class="good-detail-img rounded mx-auto d-block" src="{{good.photo_link}}"/>
+            </div>
+
+            <div>
+                <p>
+                    <a href="https://t.me/{{channel}}/{{ good.tg_post_id }}" target="_blank"><b>Telegram</b></a>
+                    |
+                    <a href="{% url 'goods_hash' photo_hash=good.hash %}">hash</a>
+                    |
+                    <a href="https://vk.com/photo{{ good.vk_owner_id }}_{{good.vk_photo_id}}">
+                        <img class="vk-logo-goods" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                    </a>
+                </p>
+            </div>
+
+            <div>
+                <h4><b>Продавец: </b>
+                <a href="https://vk.com/id{{ good.seller.vk_id }}">{{good.seller.first_name}} {{good.seller.last_name}}</a>
+                |
+                <a href="{% url 'seller_detail' pk=good.seller.vk_id %}">история</a>
+                </h4>
+            </div>
+            {% if good.descr %}
+            <div>
+                <p class="text-break"> <b>Описание: </b> {{ good.descr }} </p>
+            </div>
+            {% endif %}
+            {% if good.comments %}
+            <div>
+                <p class="text-break"> <b>Комментарии: </b> {{ good.comments }} </p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

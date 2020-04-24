@@ -4,33 +4,22 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
-from .models import Sellers, BarahlochannelGoods, BarahlochannelMtbGoods, \
-    BarahlochannelAlbums, BarahlochannelMtbAlbums, Groups, Cities
+from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities
 
+_GOODS = BarahlochannelGoods
+_ALBUMS = BarahlochannelAlbums
 
 if settings.CHANNEL == ChannelEnum.FIX_SHOSSE:
-    _GOODS = BarahlochannelGoods
-    _ALBUMS = BarahlochannelAlbums
     _CHANNEL = "barahlochannel"
 elif settings.CHANNEL == ChannelEnum.MTB:
-    _GOODS = BarahlochannelMtbGoods
-    _ALBUMS = BarahlochannelMtbAlbums
     _CHANNEL = "barahlochannel_mtb"
-
-
-def goods_list(request):
-    goods = _GOODS.objects.all().order_by('-date')
-
-    paginator = Paginator(goods, 4*30)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'goods/goods_list.html', {'goods': page_obj})
 
 
 def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
+
     sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
+    sellers = sellers.annotate(counter=Count('barahlochannelgoods')).order_by('-counter')
 
     paginator = Paginator(sellers, 4*30)
     page_number = request.GET.get('page')
@@ -60,6 +49,14 @@ def seller_detail(request, pk):
         'seller': seller, 'goods': page_obj, 'city': city, 'channel': channel, 'pagination': True})
 
 
+def cities_list(request):
+    sellers_for_goods = _GOODS.objects.values('seller_id')
+    cities_for_goods = Sellers.objects.filter(vk_id__in=sellers_for_goods).values('city_id')
+    cities = Cities.objects.filter(id__in=cities_for_goods).order_by('id')
+
+    return render(request, 'city/cities_list.html', {'cities': cities})
+
+
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
     sellers = Sellers.objects.filter(city_id=pk)
@@ -67,7 +64,7 @@ def city_page(request, pk):
     goods = _GOODS.objects.filter(seller_id__in=sellers).order_by('-date')
     count = goods.count
 
-    paginator = Paginator(goods, 3*30)
+    paginator = Paginator(goods, 11*3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -81,31 +78,53 @@ def city_sellers(request, pk):
     city = get_object_or_404(Cities, pk=pk)
     sellers_for_goods = _GOODS.objects.values('seller_id')
     sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
+    sellers = sellers.annotate(counter=Count('barahlochannelgoods')).order_by('-counter')
+
     return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
 
 
+def goods_list(request):
+    goods = _GOODS.objects.all().order_by('-date')
+
+    paginator = Paginator(goods, 11*3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    channel = _CHANNEL
+
+    return render(request, 'goods/goods_list.html', {'goods': page_obj, 'channel': channel})
+
+
 def goods_hash(request, photo_hash):
-    goods = _GOODS.objects.filter(hash=photo_hash)
+    goods = _GOODS.objects.filter(hash=photo_hash).order_by('-date')
     channel = _CHANNEL
     return render(request, 'goods/goods_hash.html', {'goods': goods, 'channel': channel})
 
 
 def goods_duplicates(request):
-    goods = _GOODS.objects.values('hash').order_by('date')[:2000]
+    hash_counter = \
+        _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=2)
+    hashes = [x['hash'] for x in hash_counter]
+
+    goods = _GOODS.objects.filter(hash__in=hashes).order_by('-date')
+
+    paginator = Paginator(goods, 11*3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     channel = _CHANNEL
-    return render(request, 'goods/goods_hash.html', {'goods': goods, 'channel': channel})
+
+    return render(request, 'goods/goods_duplicates.html', {'goods': page_obj, 'channel': channel})
 
 
-def cities_list(request):
-    sellers_for_goods = _GOODS.objects.values('seller_id')
-    cities_for_goods = Sellers.objects.filter(vk_id__in=sellers_for_goods).values('city_id')
-    cities = Cities.objects.filter(id__in=cities_for_goods).order_by('id')
-
-    return render(request, 'city/cities_list.html', {'cities': cities})
+def good_detail(request, owner_id, photo_id):
+    good = get_object_or_404(_GOODS, vk_owner_id=owner_id, vk_photo_id=photo_id)
+    return render(request, 'goods/good_detail.html', {'good': good })
 
 
 def albums_list(request):
     albums = _ALBUMS.objects.all().order_by('owner_id', 'album_id')
+
     owners = _ALBUMS.objects.values('owner_id')
     owners = [-(x['owner_id']) for x in owners]
     groups = Groups.objects.filter(id__in=owners)
