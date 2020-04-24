@@ -19,25 +19,30 @@
             <div class="row">
                 <img src="{{ seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
                 <div class="col">
-                    <div>
+                    <h1>
                         {% if seller.is_group %}
-                        <h1><b>{{ seller.first_name }}</b></h1>
+                        <b>{{ seller.first_name }}</b>
                         {% else %}
-                        <h1><b>{{ seller.first_name }} {{ seller.last_name }}</b></h1>
+                        <b>{{ seller.first_name }} {{ seller.last_name }}</b>
                         {% endif %}
-                    </div>
+
+                        {% if seller.is_group %}
+                        <a href="https://vk.com/public{{ seller.vk_id|neg }}">
+                            <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                        </a>
+                        {% else %}
+                        <a href="https://vk.com/id{{ seller.vk_id }}">
+                            <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                        </a>
+                        {% endif %}
+                    </h1>
+<!--                    <h2>-->
+<!--                    </h2>-->
                     {% if city %}
                     <h3>
                         город: <a href="/city/{{city.id}}">{{ city.title }}</a>
                     </h3>
                     {% endif %}
-                    <h2>
-                        {% if seller.is_group %}
-                        <a href="https://vk.com/public{{ seller.vk_id|neg }}">ВКонтакте</a>
-                        {% else %}
-                        <a href="https://vk.com/id{{ seller.vk_id }}">ВКонтакте</a>
-                        {% endif %}
-                    </h2>
                 </div>
             </div>
         </div>

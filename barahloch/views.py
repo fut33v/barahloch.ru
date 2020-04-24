@@ -18,6 +18,16 @@ elif settings.CHANNEL == ChannelEnum.MTB:
     _CHANNEL = "barahlochannel_mtb"
 
 
+def goods_list(request):
+    goods = _GOODS.objects.all().order_by('-date')
+
+    paginator = Paginator(goods, 4*30)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'goods/goods_list.html', {'goods': page_obj})
+
+
 def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
     sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
@@ -31,7 +41,7 @@ def sellers_list(request):
 
 def seller_detail(request, pk):
     seller = get_object_or_404(Sellers, pk=pk)
-    goods = _GOODS.objects.filter(seller_id=seller.vk_id).order_by('date')
+    goods = _GOODS.objects.filter(seller_id=seller.vk_id).order_by('-date')
 
     city = None
     if seller.city_id:
@@ -54,7 +64,7 @@ def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
     sellers = Sellers.objects.filter(city_id=pk)
 
-    goods = _GOODS.objects.filter(seller_id__in=sellers).order_by('date')
+    goods = _GOODS.objects.filter(seller_id__in=sellers).order_by('-date')
     count = goods.count
 
     paginator = Paginator(goods, 3*30)
@@ -95,7 +105,7 @@ def cities_list(request):
 
 
 def albums_list(request):
-    albums = _ALBUMS.objects.all().order_by('owner_id')
+    albums = _ALBUMS.objects.all().order_by('owner_id', 'album_id')
     owners = _ALBUMS.objects.values('owner_id')
     owners = [-(x['owner_id']) for x in owners]
     groups = Groups.objects.filter(id__in=owners)

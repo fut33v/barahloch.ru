@@ -15,6 +15,11 @@ class BarahlochannelAlbums(models.Model):
     description = models.CharField(max_length=1024, blank=True, null=True)
     photo = models.CharField(max_length=1024, blank=True, null=True)
 
+    def is_group(self):
+        if self.owner_id < 0:
+            return True
+        return False
+
     class Meta:
         managed = False
         db_table = 'barahlochannel_albums'
@@ -25,7 +30,6 @@ class BarahlochannelGoods(models.Model):
     vk_owner_id = models.IntegerField(primary_key=True)
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
-    #seller_id = models.IntegerField()
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)
@@ -56,7 +60,6 @@ class BarahlochannelMtbGoods(models.Model):
     vk_owner_id = models.IntegerField(primary_key=True)
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
-    # seller_id = models.IntegerField()
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)

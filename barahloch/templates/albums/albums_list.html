@@ -26,14 +26,25 @@
                     <div class="row">
                         <div class="col">
                             <div>
-                                <div class="album-img" style="background-image:url('{{a.photo}}')"></div>
+                                <b>
+                                    {{a.owner_name}}
+                                </b>
+                                {% if a.is_group %}
+                                <a href="https://vk.com/public{{ a.owner_id|neg }}">
+                                {% else %}
+                                <a href="https://vk.com/id{{ a.owner_id }}">
+                                {% endif %}
+                                    <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                                </a>
+<!--                                <span>/</span>-->
                             </div>
                             <div>
-                                <b> {{a.owner_name}} </b>
-                                /
                                 <a href="https://vk.com/album{{a.owner_id}}_{{a.album_id}}" target="_blank">
                                     <b> {{ a.title }} </b>
                                 </a>
+                            </div>
+                            <div>
+                                <div class="album-img" style="background-image:url('{{a.photo}}')"></div>
                             </div>
                             <div>
                             </div>

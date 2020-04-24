@@ -3,10 +3,10 @@ from . import views, converters
 
 register_converter(converters.NegativeIntConverter, 'negint')
 
-#path('account/<negint:code>/', views.account_code),
 
 urlpatterns = [
-    path('', views.sellers_list, name='sellers_list'),
+    path('', views.goods_list, name='goods_list'),
+    path('sellers', views.sellers_list, name='sellers_list'),
 
     path('seller/<negint:pk>/', views.seller_detail, name='seller_detail'),
     path('city/<int:pk>/', views.city_page, name='city_page'),

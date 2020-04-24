@@ -1,19 +1,42 @@
+
 <div class="pagination-container">
-    <div class="pagination">
-    <span class="step-links">
-        {% if page.has_previous %}
-            <a href="?page=1">&laquo; первая</a>
-            <a href="?page={{ page.previous_page_number }}">предыдущая</a>
-        {% endif %}
 
-        <span class="current">
-            Страница {{ page.number }} из {{ page.paginator.num_pages }}.
-        </span>
+    <nav>
+        <ul class="pagination pagination-lg">
+            {% if page.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">&lt;&lt;сюда</a></li>
+            {% endif %}
 
-        {% if page.has_next %}
-            <a href="?page={{ page.next_page_number }}">следующая</a>
-            <a href="?page={{ page.paginator.num_pages }}">последняя &raquo;</a>
-        {% endif %}
-    </span>
-    </div>
+            <li class="page-item active">
+                <a class="page-link" href="#">
+                    {{ page.number }} из {{ page.paginator.num_pages }}
+                </a>
+            </li>
+
+            {% if page.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">туда&gt;&gt;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page.paginator.num_pages }}">{{page.paginator.num_pages}}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+<!--    <div class="pagination">-->
+<!--    <span class="step-links">-->
+<!--        {% if page.has_previous %}-->
+<!--            <a href="?page=1">&laquo; первая</a>-->
+<!--            <a href="?page={{ page.previous_page_number }}">предыдущая</a>-->
+<!--        {% endif %}-->
+
+<!--        <span class="current">-->
+<!--            Страница {{ page.number }} из {{ page.paginator.num_pages }}.-->
+<!--        </span>-->
+
+<!--        {% if page.has_next %}-->
+<!--            <a href="?page={{ page.next_page_number }}">следующая</a>-->
+<!--            <a href="?page={{ page.paginator.num_pages }}">последняя &raquo;</a>-->
+<!--        {% endif %}-->
+<!--    </span>-->
+<!--    </div>-->
 </div>

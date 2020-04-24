@@ -1,3 +1,5 @@
+{% load static %}
+
 {% load barahloch_extras %}
 
 <div class="container-fluid">
@@ -9,33 +11,37 @@
     <div class="row row-cols-3">
     {% endif %}
     <div class="col-sd-4">
-        <div class=" seller">
+        <div class="seller">
                 <div class="row">
                     <img src="{{ s.photo }}" class="seller-photo rounded-circle col-5"/>
-                    <ul class="list-group list-group-flush col">
-                        <li class="list-group-item">
+                    <div class="col">
+                        <div>
+                            <h4>
                             {% if s.is_group %}
-                            <h5>{{ s.first_name }}</h5>
+                            {{ s.first_name }}
                             {% else %}
-                            <h5>{{ s.first_name }} {{ s.last_name }}</h5>
+                            {{ s.first_name }} {{ s.last_name }}
                             {% endif %}
-                        </li>
+                            {% if s.is_group %}
+                            <a href="https://vk.com/public{{ s.vk_id|neg }}">
+                                <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                            </a>
+                            {% else %}
+                            <a href="https://vk.com/id{{ s.vk_id }}">
+                                <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                            </a>
+                            {% endif %}
+                            </h4>
+                        </div>
                         {% if s.city %}
-                        <li class="list-group-item">
-                            <a href="{% url 'city_page' pk=s.city.id %}">{{s.city.title}}</a>
-                        </li>
+                        <div>
+                            <h5><a href="{% url 'city_page' pk=s.city.id %}">{{s.city.title}}</a></h5>
+                        </div>
                         {% endif %}
-                        <li class="list-group-item">
-                            {% if s.is_group %}
-                            <a href="https://vk.com/public{{ s.vk_id|neg }}">вКонтакте</a>
-                            {% else %}
-                            <a href="https://vk.com/id{{ s.vk_id }}">вКонтакте</a>
-                            {% endif %}
-                        </li>
-                        <li class="list-group-item">
+                        <div>
                             <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
         </div>
     </div>

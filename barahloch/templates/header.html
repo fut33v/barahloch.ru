@@ -5,14 +5,26 @@
 
 
 <header>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <a class="navbar-brand" href="#">barahloch.ru</a>
+
 <ul class="navbar-nav mr-auto">
+
+{% ifequal view_name "goods_list" %}
+    <li class="nav-item active">
+{% else %}
+    <li class="nav-item">
+{% endifequal %}
+        <a class="nav-link" href="/">Товары<span class="sr-only">(current)</span></a>
+    </li>
+
 {% ifequal view_name "sellers_list" %}
         <li class="nav-item active">
 {% else %}
         <li class="nav-item">
 {% endifequal %}
-            <h3><a class="nav-link" href="/">Продавцы<span class="sr-only">(current)</span></a></h3>
+            <a class="nav-link" href="/sellers">Продавцы<span class="sr-only"></span></a>
         </li>
 
 {% ifequal view_name "albums_list" %}
@@ -20,7 +32,7 @@
 {% else %}
         <li class="nav-item">
 {% endifequal %}
-            <h3><a class="nav-link" href="/albums">Альбомы</a></h3>
+            <a class="nav-link" href="/albums">Альбомы</a>
         </li>
 
     {% ifequal view_name "cities_list" %}
@@ -28,7 +40,7 @@
         {% else %}
     <li class="nav-item">
         {% endifequal %}
-        <h3><a class="nav-link" href="/cities">Города</a></h3>
+        <a class="nav-link" href="/cities">Города</a>
     </li>
 </ul>
 

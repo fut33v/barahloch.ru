@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+{% include "head.html" with title=Товары %}
+<body>
+{% include "header.html" %}
+
+<div class="content">
+
+    {% include "goods.html" with goods=goods show_seller=True pagination=True %}
+
+</div>
+
+</body>
+</html>

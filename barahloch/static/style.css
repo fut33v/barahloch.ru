@@ -66,5 +66,15 @@ header {
     justify-content: center;
 }
 
+
 .pagination {
+    margin: 10px;
+}
+
+.vk-logo {
+    width: 3vw;
+}
+
+.vk-logo-sellers {
+    width: 1vw;
 }
