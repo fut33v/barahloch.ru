@@ -45,12 +45,20 @@
                 </div>
                 {% if g.descr %}
                 <div>
-                    <p class="text-break"> <b>Описание: </b> {{ g.descr }} </p>
+                    <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:40 }}
+                        <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+                            подробнее...
+                        </a>
+                    </p>
                 </div>
                 {% endif %}
                 {% if g.comments %}
                 <div>
-                    <p class="text-break"> <b>Комментарии: </b> {{ g.comments }} </p>
+                    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|truncatewords_html:40 }}
+                        <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+                            подробнее...
+                        </a>
+                    </p>
                 </div>
                 {% endif %}
 

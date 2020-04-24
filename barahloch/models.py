@@ -16,6 +16,9 @@ if settings.CHANNEL == ChannelEnum.FIX_SHOSSE:
 elif settings.CHANNEL == ChannelEnum.MTB:
     _GOODS_TABLE = 'barahlochannel_mtb_goods'
     _ALBUMS_TABLE = 'barahlochannel_mtb_albums'
+elif settings.CHANNEL == ChannelEnum.DEBUG:
+    _GOODS_TABLE = 'barahl0_goods'
+    _ALBUMS_TABLE = 'barahl0_albums'
 
 
 class BarahlochannelAlbums(models.Model):

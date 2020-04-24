@@ -13,6 +13,9 @@ if settings.CHANNEL == ChannelEnum.FIX_SHOSSE:
     _CHANNEL = "barahlochannel"
 elif settings.CHANNEL == ChannelEnum.MTB:
     _CHANNEL = "barahlochannel_mtb"
+elif settings.CHANNEL == ChannelEnum.DEBUG:
+    _CHANNEL = "barahl0"
+
 
 
 def sellers_list(request):
@@ -119,7 +122,8 @@ def goods_duplicates(request):
 
 def good_detail(request, owner_id, photo_id):
     good = get_object_or_404(_GOODS, vk_owner_id=owner_id, vk_photo_id=photo_id)
-    return render(request, 'goods/good_detail.html', {'good': good })
+    channel = _CHANNEL
+    return render(request, 'goods/good_detail.html', {'good': good, 'channel': channel})
 
 
 def albums_list(request):
