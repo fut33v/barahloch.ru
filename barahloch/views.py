@@ -109,7 +109,13 @@ def goods_duplicates(request):
         _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=2)
     hashes = [x['hash'] for x in hash_counter]
 
-    goods = _GOODS.objects.filter(hash__in=hashes).order_by('-date')
+    goods_tmp = _GOODS.objects.filter(hash__in=hashes).order_by('-date')
+    goods = []
+    hash_set = set()
+    for g in goods_tmp:
+        if g.hash not in hash_set:
+            hash_set.add(g.hash)
+            goods.append(g)
 
     paginator = Paginator(goods, 11*3)
     page_number = request.GET.get('page')
