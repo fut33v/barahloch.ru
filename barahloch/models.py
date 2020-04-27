@@ -56,6 +56,7 @@ class BarahlochannelGoods(models.Model):
     vk_owner_id = models.IntegerField(primary_key=True)
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
+    photo_preview = models.CharField(max_length=1024)
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)
@@ -72,6 +73,11 @@ class BarahlochannelGoods(models.Model):
 
     def duplicates_number(self):
         return BarahlochannelGoods.objects.filter(hash=self.hash).count()
+
+    def get_preview_photo(self):
+        if not self.photo_preview:
+            return self.photo_link
+        return self.photo_preview
 
     class Meta:
         managed = False

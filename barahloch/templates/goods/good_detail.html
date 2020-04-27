@@ -11,47 +11,40 @@
 {% include "header.html" %}
 
 <div class="content">
-    <div class="container-fluid">
-        <div class="row">
 
-            <div class="col-7">
-                <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
-            </div>
+    <h2> {{ good.date }} </h2>
 
-            <div class="col">
-                <h3><b> {{ good.date }} </b></h3>
-                <p>
-                    <a href="https://t.me/{{channel}}/{{ good.tg_post_id }}" target="_blank"><b>Telegram</b></a>
-                    {% if good.has_duplicates %}
-                    |
-                    <a href="{% url 'goods_hash' photo_hash=good.hash %}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
-                    {% endif %}
-                    |
-                    <a href="https://vk.com/photo{{ good.vk_owner_id }}_{{good.vk_photo_id}}">
-                        <img class="vk-logo-goods" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
-                    </a>
-                </p>
+    <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
 
-                <div>
-                    <h4><b>Продавец: </b>
-                        <a href="https://vk.com/id{{ good.seller.vk_id }}">{{good.seller.first_name}} {{good.seller.last_name}}</a>
-                        |
-                        <a href="{% url 'seller_detail' pk=good.seller.vk_id %}">история</a>
-                    </h4>
-                </div>
-                {% if good.descr %}
-                <div>
-                    <p class="text-break"> <b>Описание: </b> {{ good.descr|bold_numbers|safe }} </p>
-                </div>
-                {% endif %}
-                {% if good.comments %}
-                <div>
-                    <p class="text-break"> <b>Комментарии: </b> {{ good.comments|bold_numbers|safe }} </p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+    <div class="mt-2">
+        <a class="link-img" href="https://t.me/{{channel}}/{{ good.tg_post_id }}" target="_blank">
+            <img class="vk-logo-goods" src="{% static 'tg-logo.svg' %}" alt="ВКонтакте"/>
+        </a>
+        <a class="link-img" href="https://vk.com/photo{{ good.vk_owner_id }}_{{good.vk_photo_id}}">
+            <img class="vk-logo-goods" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+        </a>
+        {% if good.has_duplicates %}
+        <a href="{% url 'goods_hash' photo_hash=good.hash %}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
+        {% endif %}
     </div>
+
+    <p>
+        <h4><b>Продавец: </b>
+            <a href="https://vk.com/id{{ good.seller.vk_id }}">{{good.seller.first_name}} {{good.seller.last_name}}</a>
+            |
+            <a href="{% url 'seller_detail' pk=good.seller.vk_id %}">история</a>
+        </h4>
+    </p>
+    {% if good.descr %}
+    <div>
+        <p class="text-break"><b>Описание: </b> {{ good.descr|bold_numbers|safe }} </p>
+    </div>
+    {% endif %}
+    {% if good.comments %}
+    <div>
+        <p class="text-break"><b>Комментарии: </b> {{ good.comments|bold_numbers|safe }} </p>
+    </div>
+    {% endif %}
 </div>
 
 </body>
