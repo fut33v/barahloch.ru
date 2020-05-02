@@ -17,7 +17,6 @@ elif settings.CHANNEL == ChannelEnum.DEBUG:
     _CHANNEL = "barahl0"
 
 
-
 def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
 
@@ -106,7 +105,7 @@ def goods_hash(request, photo_hash):
 
 def goods_duplicates(request):
     hash_counter = \
-        _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=2)
+        _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=1)
     hashes = [x['hash'] for x in hash_counter]
 
     goods_tmp = _GOODS.objects.filter(hash__in=hashes).order_by('-date')
