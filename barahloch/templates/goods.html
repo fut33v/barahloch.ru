@@ -24,16 +24,7 @@
                   {% endif %}
                   {% endif %}
                   </div>
-            <div>
-                <p>
-                    <b>Цена:</b> {{ g.price }} {{g.currency}}
-                </p>
-                <p>
-                    <b>Категория: </b>
-                    <a href="{% url 'telegram_goods_category' category=g.category %}">
-                        {{ g.get_category_display }}
-                    </a>
-                </p>
+            <div class="mt-2 mb-2">
                 {% if show_seller %}
                 <p>
                     <b>Продавец:</b>
@@ -48,7 +39,15 @@
                     <a href="{% url 'telegram_seller_detail' tg_user_id=g.tg_user.tg_user_id %}">история</a>
                 </p>
                 {% endif %}
-
+                <p>
+                    <b>Цена:</b> {{ g.price }} {{g.currency}}
+                </p>
+                <p>
+                    <b>Категория: </b>
+                    <a href="{% url 'telegram_goods_category' category=g.category %}">
+                        {{ g.get_category_display }}
+                    </a>
+                </p>
                 <p>
                     <b>Город: </b> {{ g.tg_user.city.title }}
                 </p>
