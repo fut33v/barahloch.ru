@@ -41,7 +41,7 @@
                 <p>
                     <b>Категория: </b>
                     <a href="{% url 'telegram_goods_category' category=g.category %}">
-                        {{ g.category }}
+                        {{ g.get_category_display }}
                     </a>
                 </p>
                 <p>
