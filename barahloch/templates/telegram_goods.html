@@ -59,7 +59,7 @@
         </p>
         <p class="text-break"> <b>Название: </b> {{ g.caption }}</p>
         <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:100 }}
-        <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+        <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id  %}">
         подробнее...
         </a>
         </p>
