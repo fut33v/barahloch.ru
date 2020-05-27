@@ -8,17 +8,90 @@
 from django.db import models
 from django.conf import settings
 from barahlochannel.settings import ChannelEnum
+from enum import Enum, auto
 
 
-if settings.CHANNEL == ChannelEnum.FIX_SHOSSE:
-    _GOODS_TABLE = 'barahlochannel_goods'
-    _ALBUMS_TABLE = 'barahlochannel_albums'
-elif settings.CHANNEL == ChannelEnum.MTB:
-    _GOODS_TABLE = 'barahlochannel_mtb_goods'
-    _ALBUMS_TABLE = 'barahlochannel_mtb_albums'
-elif settings.CHANNEL == ChannelEnum.DEBUG:
-    _GOODS_TABLE = 'barahl0_goods'
-    _ALBUMS_TABLE = 'barahl0_albums'
+class CategoriesEnum(Enum):
+    ROAD = auto()
+    CYCLOCROSS = auto()
+    FIX = auto()
+    SINGLE = auto()
+    GRAVEL = auto()
+    TOURING = auto()
+    FRAMES = auto()
+    FORKS = auto()
+    RIMBRAKES = auto()
+    DISCBRAKES = auto()
+    BRAKELEVERS = auto()
+    BRAKECABLES = auto()
+    HANDLEBARS = auto()
+    STEMS = auto()
+    HEADSETS = auto()
+    TOPCAPS = auto()
+    SPACERS = auto()
+    BARTAPES = auto()
+    GRIPS = auto()
+    SADDLES = auto()
+    SEATPOSTS = auto()
+    CLAMPS = auto()
+    GROUPSETS = auto()
+    CHAINSETS = auto()
+    CHAINS = auto()
+    BOTTOMBRACKETS = auto()
+    CHAINRINGS = auto()
+    FRONTDERAILLEURS = auto()
+    CASSETES = auto()
+    FREEHUBS = auto()
+    REARDERAILLEURS = auto()
+    GEARLEVERS = auto()
+    MECHHANGERS = auto()
+    GEARCABLES = auto()
+    PEDALS = auto()
+    CLEATS = auto()
+    STRAPS = auto()
+    TOECLIPS = auto()
+    CLEATCOVERS = auto()
+    WHEELS = auto()
+    HUBS = auto()
+    TYRES = auto()
+    RIMS = auto()
+    TUBES = auto()
+    SPOKES = auto()
+    PUMPS = auto()
+    TOOLS = auto()
+    STANDS = auto()
+    GLASSES = auto()
+    LOCKS = auto()
+    LIGHTS = auto()
+    BOTTLES = auto()
+    BOTTLECAGES = auto()
+    COMPUTERS = auto()
+    MUDGUARDS = auto()
+    RACKS = auto()
+    TRAINERS = auto()
+    BIKEBAGS = auto()
+    FRAMEBAGS = auto()
+    BAUL = auto()
+    ROLLTOPS = auto()
+    MESSENGERS = auto()
+    HANDLEBARBAGS = auto()
+    WAISTBAGS = auto()
+    CLOTHING = auto()
+    FOOTWEAR = auto()
+    HELMETS = auto()
+
+
+class CurrencyEnum(Enum):
+    RUB = 'RUB/₽'
+    USD = 'USD/$'
+    EUR = 'EUR/€'
+    UAH = 'UAH/Гривна'
+
+
+class ShippingEnum(Enum):
+    DO_NOT_SHIP = "Не отправляю"
+    WILL_SHIP_BY_CUSTOMER = "За счет покупателя"
+    WILL_SHIP_SAINT = "За свой счёт"
 
 
 class BarahlochannelAlbums(models.Model):
@@ -35,7 +108,7 @@ class BarahlochannelAlbums(models.Model):
 
     class Meta:
         managed = False
-        db_table = _ALBUMS_TABLE
+        db_table = 'albums'
         unique_together = (('owner_id', 'album_id'),)
 
 
@@ -81,7 +154,7 @@ class BarahlochannelGoods(models.Model):
 
     class Meta:
         managed = False
-        db_table = _GOODS_TABLE
+        db_table = 'goods'
         unique_together = (('vk_owner_id', 'vk_photo_id'),)
 
 
@@ -123,3 +196,42 @@ class Sellers(models.Model):
     class Meta:
         managed = False
         db_table = 'sellers'
+
+
+class TgGoods(models.Model):
+    CATEGORY_CHOICES = [(c.name, c.name) for c in CategoriesEnum]
+    SHIP_CHOICES = [(s.name, s.value) for s in ShippingEnum]
+    CURRENCY_CHOICES = [(c.name, c.value) for c in CurrencyEnum]
+
+    tg_user = models.ForeignKey('TgSellers', models.DO_NOTHING, blank=True, null=True)
+    photo_link = models.CharField(max_length=1024, blank=True, null=True)
+    caption = models.CharField(max_length=4096, blank=True, null=True)
+    descr = models.CharField(max_length=4096, blank=True, null=True)
+    tg_post_id = models.IntegerField(primary_key=True)
+    date = models.DateTimeField(blank=True, null=True)
+    hash = models.CharField(max_length=64, blank=True, null=True)
+    category = models.TextField(blank=True, null=True, choices=CATEGORY_CHOICES)
+    price = models.IntegerField(blank=True, null=True)
+    currency = models.TextField(blank=True, null=True, choices=CURRENCY_CHOICES)
+    ship = models.TextField(blank=True, null=True, choices=SHIP_CHOICES)
+    vk_owner_id = models.IntegerField(blank=True, null=True)
+    vk_photo_id = models.IntegerField(blank=True, null=True)
+
+    def get_preview_photo(self):
+        return self.photo_link
+
+    class Meta:
+        managed = False
+        db_table = 'tg_goods'
+
+
+class TgSellers(models.Model):
+    tg_user_id = models.IntegerField(primary_key=True)
+    full_name = models.CharField(max_length=512, blank=True, null=True)
+    username = models.CharField(max_length=512, blank=True, null=True)
+    tg_chat_id = models.IntegerField(blank=True, null=True)
+    city = models.ForeignKey(Cities, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tg_sellers'

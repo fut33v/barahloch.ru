@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+{% load barahloch_extras %}
+
+{% include "head.html" with title="" %}
+
+<body>
+
+{% include "header.html" %}
+
+<div class="content">
+
+    <h2> {{ good.date }} </h2>
+
+    <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
+
+
+    <div class="mt-2">
+        <p>
+            <b>Цена:</b> {{ good.price }} {{good.currency}}
+        </p>
+        <p>
+            <b>Продавец:</b>
+            {{good.tg_user.full_name}}
+            {% if good.tg_user.username %}
+            |
+            <a href="https://t.me/{{good.tg_user.username}}" target="_blank">
+                Telegram
+            </a>
+            {% endif %}
+        </p>
+        <p>
+            <b>Город: </b> {{ good.tg_user.city.title }}
+        </p>
+        <p>
+            <b>Отправка: </b> {{ good.get_ship_display }}
+        </p>
+        <p class="text-break"> <b>Название: </b> {{ good.caption }}</p>
+        <p class="text-break"> <b>Описание: </b> {{ good.descr|truncatewords_html:100 }}
+            <a href="{% url 'good_detail' owner_id=good.vk_owner_id photo_id=good.vk_photo_id %}">
+                подробнее...
+            </a>
+        </p>
+    </div>
+
+    <div class="mt-2">
+        <a class="link-img" href="https://t.me/{{channel}}/{{ good.tg_post_id }}" target="_blank">
+            <img class="vk-logo-goods" src="{% static 'tg-logo.svg' %}" alt="Telegram"/>
+        </a>
+        {% if good.has_duplicates %}
+        <a href="{% url 'goods_hash' photo_hash=good.hash %}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

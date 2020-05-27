@@ -78,16 +78,36 @@ WSGI_APPLICATION = 'barahlochannel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'OPTIONS': {
+#             'read_default_file': '/etc/mysql/my.cnf',
+#         },
+#         'NAME': 'barahlochannel',
+#         'USER': 'fut33v',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',
+#     }
+# }
+
+DATABASE_NAME = ''
+
+if CHANNEL == ChannelEnum.DEBUG:
+    DATABASE_NAME = 'barahl0'
+elif CHANNEL == ChannelEnum.FIX_SHOSSE:
+    DATABASE_NAME = 'barahlochannel'
+elif CHANNEL == ChannelEnum.MTB:
+    DATABASE_NAME = 'barahlochannel_mtb'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/etc/mysql/my.cnf',
-        },
-        'NAME': 'barahlochannel',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DATABASE_NAME,
         'USER': 'fut33v',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        # 'PASSWORD': '',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '5432',
     }
 }
 

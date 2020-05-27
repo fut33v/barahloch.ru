@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
-from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities
+from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers
 
 _GOODS = BarahlochannelGoods
 _ALBUMS = BarahlochannelAlbums
@@ -152,3 +152,33 @@ def albums_list(request):
                 a.owner_name = seller.first_name + ' ' + seller.last_name
 
     return render(request, 'albums/albums_list.html', {'albums': albums, 'groups': groups})
+
+
+def telegram_goods_list(request):
+    goods = TgGoods.objects.all().order_by('-date')
+
+    paginator = Paginator(goods, 11*3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    channel = _CHANNEL
+
+    return render(request, 'tg_goods/goods_list.html', {'goods': page_obj, 'channel': channel})
+
+
+def telegram_good_detail(request, tg_post_id):
+    good = get_object_or_404(TgGoods, tg_post_id=tg_post_id)
+    channel = _CHANNEL
+    return render(request, 'tg_goods/good_detail.html', {'good': good, 'channel': channel})
+
+
+def telegram_goods_category(request, category):
+    goods = TgGoods.objects.filter(category=category).order_by('-date')
+
+    paginator = Paginator(goods, 11 * 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    channel = _CHANNEL
+
+    return render(request, 'tg_goods/goods_list.html', {'goods': page_obj, 'channel': channel})

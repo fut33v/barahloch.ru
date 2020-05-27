@@ -4,7 +4,7 @@
 {% with request.resolver_match.view_name as view_name %}
 
 <header>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
 
     <a class="navbar-brand" href="/">barahloch.ru</a>
 
@@ -48,6 +48,10 @@
     <li class="nav-item">
 {% endifequal %}
         <a class="nav-link" href="{% url 'goods_duplicates' %}">Дубликаты</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'telegram_goods_list' %}">Товары Telegram</a>
     </li>
 
 </ul>
