@@ -30,6 +30,8 @@
                 Telegram
             </a>
             {% endif %}
+            |
+            <a href="{% url 'telegram_seller_detail' tg_user_id=good.tg_user.tg_user_id %}">история</a>
         </p>
         <p>
             <b>Город: </b> {{ good.tg_user.city.title }}
@@ -38,11 +40,7 @@
             <b>Отправка: </b> {{ good.get_ship_display }}
         </p>
         <p class="text-break"> <b>Название: </b> {{ good.caption }}</p>
-        <p class="text-break"> <b>Описание: </b> {{ good.descr|truncatewords_html:100 }}
-            <a href="{% url 'good_detail' owner_id=good.vk_owner_id photo_id=good.vk_photo_id %}">
-                подробнее...
-            </a>
-        </p>
+        <p class="text-break"> <b>Описание: </b> {{ good.descr }} </p>
     </div>
 
     <div class="mt-2">

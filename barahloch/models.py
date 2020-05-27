@@ -153,6 +153,9 @@ class BarahlochannelGoods(models.Model):
             return self.photo_link
         return self.photo_preview
 
+    def is_telegram(self):
+        return False
+
     class Meta:
         managed = False
         db_table = 'goods'
@@ -221,6 +224,9 @@ class TgGoods(models.Model):
     def get_preview_photo(self):
         return self.photo_link
 
+    def is_telegram(self):
+        return True
+
     class Meta:
         managed = False
         db_table = 'tg_goods'
@@ -232,6 +238,9 @@ class TgSellers(models.Model):
     username = models.CharField(max_length=512, blank=True, null=True)
     tg_chat_id = models.IntegerField(blank=True, null=True)
     city = models.ForeignKey(Cities, models.DO_NOTHING, blank=True, null=True)
+
+    def goods_counter(self):
+        return TgGoods.objects.filter(tg_user__tg_user_id=self.tg_user_id).count()
 
     class Meta:
         managed = False

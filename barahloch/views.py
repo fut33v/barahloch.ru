@@ -6,6 +6,8 @@ from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
 from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers
 
+from itertools import chain
+
 _GOODS = BarahlochannelGoods
 _ALBUMS = BarahlochannelAlbums
 
@@ -87,6 +89,10 @@ def city_sellers(request, pk):
 
 def goods_list(request):
     goods = _GOODS.objects.all().order_by('-date')
+    tg_goods = TgGoods.objects.all().order_by('-date')
+
+    goods = list(chain(tg_goods, goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
 
     paginator = Paginator(goods, 11*3)
     page_number = request.GET.get('page')
@@ -163,13 +169,13 @@ def telegram_goods_list(request):
 
     channel = _CHANNEL
 
-    return render(request, 'tg_goods/goods_list.html', {'goods': page_obj, 'channel': channel})
+    return render(request, 'telegram/goods_list.html', {'goods': page_obj, 'channel': channel})
 
 
 def telegram_good_detail(request, tg_post_id):
     good = get_object_or_404(TgGoods, tg_post_id=tg_post_id)
     channel = _CHANNEL
-    return render(request, 'tg_goods/good_detail.html', {'good': good, 'channel': channel})
+    return render(request, 'telegram/good_detail.html', {'good': good, 'channel': channel})
 
 
 def telegram_goods_category(request, category):
@@ -181,4 +187,18 @@ def telegram_goods_category(request, category):
 
     channel = _CHANNEL
 
-    return render(request, 'tg_goods/goods_list.html', {'goods': page_obj, 'channel': channel})
+    return render(request, 'telegram/goods_list.html', {'goods': page_obj, 'channel': channel})
+
+
+def telegram_seller_detail(request, tg_user_id):
+    seller = get_object_or_404(TgSellers, pk=tg_user_id)
+    goods = TgGoods.objects.filter(tg_user_id=seller.tg_user_id).order_by('-date')
+
+    paginator = Paginator(goods, 1*30)
+    channel = _CHANNEL
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'telegram/seller_detail.html', {
+        'seller': seller, 'goods': page_obj, 'channel': channel, 'pagination': True})

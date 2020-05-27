@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+{% include "head.html" with title="Товары из Telegram" %}
+<body>
+{% include "header.html" %}
+
+<div class="content">
+    {% include "telegram_goods.html" with goods=goods show_seller=True pagination=True channel=channel show_duplicates=True %}
+</div>
+
+</body>
+</html>

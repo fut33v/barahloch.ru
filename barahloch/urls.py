@@ -20,6 +20,7 @@ urlpatterns = [
     path('tg_goods/', views.telegram_goods_list, name='telegram_goods_list'),
     path('tg_goods/<int:tg_post_id>', views.telegram_good_detail, name='telegram_good_detail'),
     path('tg_goods/category/<slug:category>', views.telegram_goods_category, name='telegram_goods_category'),
+    path('tg_seller/<int:tg_user_id>/', views.telegram_seller_detail, name='telegram_seller_detail'),
 
     path('albums', views.albums_list, name='albums_list'),
 ]
