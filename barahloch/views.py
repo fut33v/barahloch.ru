@@ -89,9 +89,6 @@ def city_sellers(request, pk):
 
 
 def goods_list(request):
-    user = None
-    if request.user.is_authenticated:
-        user = request.user
 
     goods = _GOODS.objects.all().order_by('-date')
     tg_goods = TgGoods.objects.all().order_by('-date')
@@ -104,10 +101,15 @@ def goods_list(request):
     page_obj = paginator.get_page(page_number)
 
     channel = _CHANNEL
+    vk_user_id = None
+    if request.user.is_authenticated:
+        user = request.user
+        vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
 
     return render(request, 'goods/goods_list.html', {
         'goods': page_obj,
-        'channel': channel})
+        'channel': channel,
+        'vk_user_id': vk_user_id})
 
 
 def goods_hash(request, photo_hash):
