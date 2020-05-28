@@ -1,3 +1,4 @@
+{% load static %}
 
 {% include "yandex.html" %}
 
@@ -55,6 +56,20 @@
     </li>
 
 </ul>
+
+<span class="navbar-text">
+    {% if user.is_authenticated %}
+    <span class="nav-link">{{user.first_name}} {{user.last_name}}
+    </span>
+    <a class="nav-link" href="{% url 'logout_view' %}">Выйти</a>
+    {% else %}
+    <a class="nav-link" href="{% url 'login_view' %}">Войти</a>
+    {% endif %}
+</span>
+
+<!--    <a href="/login/vk-oauth2">-->
+<!--        <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="Login via ВКонтакте"/>-->
+<!--    </a>-->
 
 <!--    <form class="form-inline my-2 my-lg-0">-->
 <!--      <input class="form-control mr-sm-2" type="search" placeholder="Поиск" aria-label="Поиск">-->

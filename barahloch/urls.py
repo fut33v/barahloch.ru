@@ -1,4 +1,4 @@
-from django.urls import path, register_converter
+from django.urls import path, register_converter, include
 from . import views, converters
 
 register_converter(converters.NegativeIntConverter, 'negint')
@@ -23,4 +23,10 @@ urlpatterns = [
     path('tg_seller/<int:tg_user_id>/', views.telegram_seller_detail, name='telegram_seller_detail'),
 
     path('albums', views.albums_list, name='albums_list'),
+
+    path('login', views.login_view, name='login_view'),
+    path('logout', views.logout_view, name='logout_view'),
+
+    path('', include('social_django.urls')),
+
 ]

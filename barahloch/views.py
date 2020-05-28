@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 
 from django.conf import settings
 from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
+from django.contrib.auth import authenticate, login, logout
 from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers
 
 from itertools import chain
@@ -88,6 +89,10 @@ def city_sellers(request, pk):
 
 
 def goods_list(request):
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
+
     goods = _GOODS.objects.all().order_by('-date')
     tg_goods = TgGoods.objects.all().order_by('-date')
 
@@ -100,7 +105,9 @@ def goods_list(request):
 
     channel = _CHANNEL
 
-    return render(request, 'goods/goods_list.html', {'goods': page_obj, 'channel': channel})
+    return render(request, 'goods/goods_list.html', {
+        'goods': page_obj,
+        'channel': channel})
 
 
 def goods_hash(request, photo_hash):
@@ -202,3 +209,23 @@ def telegram_seller_detail(request, tg_user_id):
 
     return render(request, 'telegram/seller_detail.html', {
         'seller': seller, 'goods': page_obj, 'channel': channel, 'pagination': True})
+
+
+def login_view(request):
+    if 'login' in request.GET and 'password' in request.GET:
+        username = request.GET['login']
+        password = request.GET['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return render(request, 'login.html', {'failed': True})
+    else:
+        return render(request, 'login.html', {})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+

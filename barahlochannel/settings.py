@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'barahloch'
 ]
 
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
             ],
         },
     },
@@ -77,20 +79,6 @@ WSGI_APPLICATION = 'barahlochannel.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'OPTIONS': {
-#             'read_default_file': '/etc/mysql/my.cnf',
-#         },
-#         'NAME': 'barahlochannel',
-#         'USER': 'fut33v',
-#         'PASSWORD': '',
-#         'HOST': 'localhost',
-#     }
-# }
-
 DATABASE_NAME = ''
 
 if CHANNEL == ChannelEnum.DEBUG:
@@ -105,9 +93,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
         'USER': 'fut33v',
-        # 'PASSWORD': '',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '5432',
     }
 }
 
@@ -151,3 +136,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 SILENCED_SYSTEM_CHECKS = ['mysql.E001']
 
 ADMIN_ENABLED = False
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.vk.VKOAuth2',  # бекенд авторизации через ВКонтакте
+    'django.contrib.auth.backends.ModelBackend',  # бекенд классической аутентификации через обычный логин и пароль
+)
+SOCIAL_AUTH_VK_OAUTH2_KEY = ''
+SOCIAL_AUTH_VK_OAUTH2_SECRET = ''
+
+
