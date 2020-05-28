@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load barahloch_extras %}
+
+<html lang="en">
+
+{% with ""|addstr:user.first_name|addstr:" "|addstr:user.last_name as title %}
+{% include "head.html" %}
+{% endwith %}
+
+<body>
+
+{% include "header.html" %}
+
+<div class="content">
+    <div class="row">
+            {% if vk_seller %}
+            <img src="{{ vk_seller.photo }}" class="seller-detail-photo rounded-circle col-2"/>
+            {% else %}
+            <img src="{% static '150.jpg' %}" class="seller-detail-photo rounded-circle col-2"/>
+            {% endif %}
+
+        <div class="col-5">
+            <h2>
+                {% if vk_seller is None and tg_seller is None %}
+                    {{user.first_name}} {{user.last_name}}
+                {% endif %}
+
+                {% if vk_seller %}
+                    {{vk_seller.first_name}} {{vk_seller.last_name}}
+                    |
+                {% endif %}
+
+                {% if tg_seller %}
+                    {{tg_seller.full_name}}
+                {% endif %}
+            </h2>
+
+            <div class="mt-3">
+                {% if vk_user_id %}
+                    <a href="https://vk.com/id{{vk_user_id}}" class="text-decoration-none">
+                        <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                    </a>
+                    <b>@id{{vk_user_id}}</b>
+                {% else %}
+                    <a href="/login/vk-oauth2" class="text-decoration-none">
+                        <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="Connect ВКонтакте"/>
+                    </a>
+                    не подключен
+                {% endif %}
+            </div>
+
+            <div class="mt-3">
+                {% if tg_user_id %}
+                    <a href="https://t.me/{{tg_username}}" class="text-decoration-none">
+                        <img class="vk-logo" src="{% static 'tg-logo.svg' %}" alt="Telegram"/>
+                    </a>
+                    <b>@id{{tg_user_id}}</b>
+                {% else %}
+                <div class="mt-2">
+                    <script async src="https://telegram.org/js/telegram-widget.js?9" data-telegram-login="debug_barahl0bot" data-size="large" data-auth-url="http://158af4ed3a5e.ngrok.io/complete/telegram" data-request-access="write"></script>
+
+                </div>
+                    Telegram не подключен
+                {% endif %}
+            </div>
+
+        </div>
+        <div class="col-5">
+            <ul>
+                {% if vk_seller %}
+                <li>
+                    <a href="{% url 'seller_detail' pk=vk_seller.vk_id %}">История товаров вКонтакте</a>
+                </li>
+                {% endif %}
+                {% if tg_seller %}
+                <li>
+                    <a href="{% url 'telegram_seller_detail' tg_user_id=tg_seller.tg_user_id %}">История товаров Telegram</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+
+    {% include "goods.html" with goods=goods show_seller=False pagination=True channel=channel show_duplicates=True %}
+</div>
+
+</body>
+</html>

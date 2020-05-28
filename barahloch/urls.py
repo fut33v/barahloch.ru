@@ -22,6 +22,8 @@ urlpatterns = [
     path('tg_goods/category/<slug:category>', views.telegram_goods_category, name='telegram_goods_category'),
     path('tg_seller/<int:tg_user_id>/', views.telegram_seller_detail, name='telegram_seller_detail'),
 
+    path('profile', views.profile_view, name='profile_view'),
+
     path('albums', views.albums_list, name='albums_list'),
 
     path('login', views.login_view, name='login_view'),

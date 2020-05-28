@@ -2,6 +2,7 @@ from django.db import models
 from enum import Enum, auto
 
 
+
 class CategoriesEnum(Enum):
     ROAD = "Шоссер"
     CYCLOCROSS = "Циклокросс"
@@ -236,3 +237,5 @@ class TgSellers(models.Model):
     class Meta:
         managed = False
         db_table = 'tg_sellers'
+
+

@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 
 from django.conf import settings
+from social_django.models import UserSocialAuth, AbstractUserSocialAuth
+
 from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
 from django.contrib.auth import authenticate, login, logout
@@ -104,7 +106,10 @@ def goods_list(request):
     vk_user_id = None
     if request.user.is_authenticated:
         user = request.user
-        vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
+        try:
+            vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
+        except UserSocialAuth.DoesNotExist:
+            vk_user_id = None
 
     return render(request, 'goods/goods_list.html', {
         'goods': page_obj,
@@ -231,3 +236,57 @@ def logout_view(request):
     logout(request)
     return redirect('/')
 
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    user = request.user
+    try:
+        vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
+    except UserSocialAuth.DoesNotExist:
+        vk_user_id = None
+
+    vk_seller = None
+    if vk_user_id:
+        try:
+            vk_seller = Sellers.objects.get(vk_id=vk_user_id)
+        except Sellers.DoesNotExist:
+            vk_seller = None
+
+    tg_seller = None
+    tg_username = None
+    try:
+        tg_user_id = int(user.social_auth.get(provider='telegram').uid)
+        extra_data = user.social_auth.get(provider='telegram').extra_data
+        if 'username' in extra_data:
+            if len(extra_data['username']) != 0:
+                tg_username = extra_data['username'][0]
+    except UserSocialAuth.DoesNotExist:
+        tg_user_id = None
+    if tg_user_id:
+        try:
+            tg_seller = TgSellers.objects.get(tg_user_id=tg_user_id)
+        except TgSellers.DoesNotExist:
+            tg_seller = None
+
+    tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+    vk_goods = BarahlochannelGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
+    # get goods for this profile
+    # and pagination
+    paginator = Paginator(goods, 15*2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'profile.html', {
+        'vk_user_id': vk_user_id,
+        'tg_user_id': tg_user_id,
+        'tg_username': tg_username,
+        'vk_seller': vk_seller,
+        'tg_seller': tg_seller,
+        'goods': page_obj,
+        'channel': _CHANNEL
+    })

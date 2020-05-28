@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from enum import Enum
+import environ
+
+env = environ.Env(DEBUG=(bool, False))
+root = environ.Path(__file__) - 2
+environ.Env.read_env()
 
 
 class ChannelEnum(Enum):
@@ -28,11 +33,20 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env.str('SECRET_KEY', '!!! SET YOUR SECRET_KEY !!!')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['mtb.barahloch.ru', 'barahloch.ru', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['mtb.barahloch.ru',
+                 'barahloch.ru',
+                 'localhost',
+                 'localhost.localdomain',
+                 '127.0.0.1',
+                 '*.ngrok.io',
+                 '158af4ed3a5e.ngrok.io']
 
 # Application definition
 
@@ -70,6 +84,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -139,14 +154,16 @@ ADMIN_ENABLED = False
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.vk.VKOAuth2',  # бекенд авторизации через ВКонтакте
-    'django.contrib.auth.backends.ModelBackend',  # бекенд классической аутентификации через обычный логин и пароль
+    'social_core.backends.telegram.TelegramAuth',
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
 )
-SOCIAL_AUTH_VK_OAUTH2_KEY = ''
-SOCIAL_AUTH_VK_OAUTH2_SECRET = ''
-
+SOCIAL_AUTH_VK_OAUTH2_KEY = env.str('SOCIAL_AUTH_VK_OAUTH2_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = env.str('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = env.str('SOCIAL_AUTH_TELEGRAM_BOT_TOKEN')
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/profile'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
+

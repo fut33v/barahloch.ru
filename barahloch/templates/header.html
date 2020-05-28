@@ -59,33 +59,17 @@
 
 <span class="navbar-text">
     {% if user.is_authenticated %}
-		{% if vk_user_id %}
-			<a href="{% url 'seller_detail' pk=vk_user_id %}">
-				<span class="nav-link">
-					{{user.first_name}} {{user.last_name}} (@{{user.get_username}})
-				</span>
-			</a>
-		{% else %}
-			<span class="nav-link">
-				{{user.first_name}} {{user.last_name}} (@{{user.get_username}})
-			</span>
-		{% endif %}
+        <a href="{% url 'profile_view' %}">
+            <span class="nav-link">
+                {{user.first_name}} {{user.last_name}} (@{{user.get_username}})
+            </span>
+        </a>
 		<a class="nav-link" href="{% url 'logout_view' %}">Выйти</a>
 
     {% else %}
 		<a class="nav-link" href="{% url 'login_view' %}">Войти</a>
     {% endif %}
 </span>
-
-<!--    <a href="/login/vk-oauth2">-->
-<!--        <img class="vk-logo" src="{% static 'vk-logo.svg' %}" alt="Login via ВКонтакте"/>-->
-<!--    </a>-->
-
-<!--    <form class="form-inline my-2 my-lg-0">-->
-<!--      <input class="form-control mr-sm-2" type="search" placeholder="Поиск" aria-label="Поиск">-->
-<!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>-->
-<!--    </form>-->
-
 </nav>
 </header>
 
