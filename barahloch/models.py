@@ -128,7 +128,7 @@ class GoodsManager(models.Manager):
 
 class BarahlochannelGoods(models.Model):
     vk_owner_id = models.IntegerField()
-    vk_photo_id = models.IntegerField(primary_key=True)
+    vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
     photo_preview = models.CharField(max_length=1024)
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
