@@ -2,7 +2,6 @@ from django.db import models
 from enum import Enum, auto
 
 
-
 class CategoriesEnum(Enum):
     ROAD = "Шоссер"
     CYCLOCROSS = "Циклокросс"
@@ -87,6 +86,15 @@ class ShippingEnum(Enum):
     WILL_SHIP_SAINT = "За свой счёт"
 
 
+class ProductStateEnum(Enum):
+    SHOW = 'в продаже'
+    SOLD = 'продано'
+    HIDDEN = 'скрыт'
+
+
+STATE_CHOICES = [(c.name, c.value) for c in ProductStateEnum]
+
+
 class BarahlochannelAlbums(models.Model):
     owner_id = models.BigIntegerField(primary_key=True)
     album_id = models.BigIntegerField()
@@ -119,8 +127,8 @@ class GoodsManager(models.Manager):
 
 
 class BarahlochannelGoods(models.Model):
-    vk_owner_id = models.IntegerField(primary_key=True)
-    vk_photo_id = models.IntegerField()
+    vk_owner_id = models.IntegerField()
+    vk_photo_id = models.IntegerField(primary_key=True)
     photo_link = models.CharField(max_length=1024)
     photo_preview = models.CharField(max_length=1024)
     seller = models.ForeignKey('Sellers', models.DO_NOTHING)
@@ -129,6 +137,7 @@ class BarahlochannelGoods(models.Model):
     tg_post_id = models.IntegerField(blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     hash = models.CharField(max_length=64, blank=True, null=True)
+    state = models.TextField(blank=True, null=False, choices=STATE_CHOICES)
 
     objects = GoodsManager()
 
@@ -212,6 +221,7 @@ class TgGoods(models.Model):
     ship = models.TextField(blank=True, null=True, choices=SHIP_CHOICES)
     vk_owner_id = models.IntegerField(blank=True, null=True)
     vk_photo_id = models.IntegerField(blank=True, null=True)
+    state = models.TextField(blank=True, null=False, choices=STATE_CHOICES)
 
     def get_preview_photo(self):
         return self.photo_link
@@ -237,5 +247,3 @@ class TgSellers(models.Model):
     class Meta:
         managed = False
         db_table = 'tg_sellers'
-
-

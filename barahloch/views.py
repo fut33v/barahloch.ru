@@ -7,14 +7,17 @@ from social_django.models import UserSocialAuth, AbstractUserSocialAuth
 from barahlochannel.settings import ChannelEnum
 from django.db.models import Count
 from django.contrib.auth import authenticate, login, logout
-from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers
+from django.contrib.auth.decorators import login_required
+
+from . import context_processors
+from .models import Sellers, BarahlochannelGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
 
 from itertools import chain
 
 _GOODS = BarahlochannelGoods
 _ALBUMS = BarahlochannelAlbums
 
-if settings.CHANNEL == ChannelEnum.FIX_SHOSSE:
+if settings.CHANNEL == ChannelEnum.FIX:
     _CHANNEL = "barahlochannel"
 elif settings.CHANNEL == ChannelEnum.MTB:
     _CHANNEL = "barahlochannel_mtb"
@@ -32,7 +35,7 @@ def sellers_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'sellers/sellers_list.html', {'sellers': page_obj})
+    return render(request, 'vkontakte/sellers_list.html', {'sellers': page_obj})
 
 
 def seller_detail(request, pk):
@@ -52,7 +55,7 @@ def seller_detail(request, pk):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'sellers/seller_detail.html', {
+    return render(request, 'vkontakte/seller_detail.html', {
         'seller': seller, 'goods': page_obj, 'city': city, 'channel': channel, 'pagination': True})
 
 
@@ -91,9 +94,11 @@ def city_sellers(request, pk):
 
 
 def goods_list(request):
+    if request.POST:
+        process_product_buttons(request)
 
-    goods = _GOODS.objects.all().order_by('-date')
-    tg_goods = TgGoods.objects.all().order_by('-date')
+    goods = _GOODS.objects.exclude(state='HIDDEN').order_by('-date')
+    tg_goods = TgGoods.objects.exclude(state='HIDDEN').order_by('-date')
 
     goods = list(chain(tg_goods, goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -111,7 +116,7 @@ def goods_list(request):
         except UserSocialAuth.DoesNotExist:
             vk_user_id = None
 
-    return render(request, 'goods/goods_list.html', {
+    return render(request, 'goods_list.html', {
         'goods': page_obj,
         'channel': channel,
         'vk_user_id': vk_user_id})
@@ -120,7 +125,7 @@ def goods_list(request):
 def goods_hash(request, photo_hash):
     goods = _GOODS.objects.filter(hash=photo_hash).order_by('-date')
     channel = _CHANNEL
-    return render(request, 'goods/goods_hash.html', {'goods': goods, 'channel': channel})
+    return render(request, 'goods_hash.html', {'goods': goods, 'channel': channel})
 
 
 def goods_duplicates(request):
@@ -142,13 +147,13 @@ def goods_duplicates(request):
 
     channel = _CHANNEL
 
-    return render(request, 'goods/goods_duplicates.html', {'goods': page_obj, 'channel': channel})
+    return render(request, 'goods_duplicates.html', {'goods': page_obj, 'channel': channel})
 
 
 def good_detail(request, owner_id, photo_id):
     good = get_object_or_404(_GOODS, vk_owner_id=owner_id, vk_photo_id=photo_id)
     channel = _CHANNEL
-    return render(request, 'goods/good_detail.html', {'good': good, 'channel': channel})
+    return render(request, 'vkontakte/good_detail.html', {'good': good, 'channel': channel})
 
 
 def albums_list(request):
@@ -237,56 +242,85 @@ def logout_view(request):
     return redirect('/')
 
 
+def process_product_buttons(request):
+    if not request.POST:
+        return
+
+    product_type = request.POST.get('type', None)
+    if not product_type:
+        return
+
+    product = None
+
+    if product_type == 'telegram':
+        product_id = request.POST.get('id', None)
+        if not product_id:
+            return
+        try:
+            product = TgGoods.objects.get(tg_post_id=product_id)
+        except TgGoods.DoesNotExist:
+            product = None
+
+    elif product_type == 'vkontakte':
+        product_id = request.POST.get('id', None)
+        if not product_id:
+            return
+        ow_ph_id = product_id.split('_')
+        if len(ow_ph_id) != 2:
+            return
+        owner_id = ow_ph_id[0]
+        photo_id = ow_ph_id[1]
+        try:
+            product = BarahlochannelGoods.objects.get(vk_owner_id=owner_id, vk_photo_id=photo_id)
+        except BarahlochannelGoods.DoesNotExist:
+            product = None
+
+    if not product:
+        return
+
+    action = request.POST.get('action', None)
+    if action:
+        if action == 'sold':
+            product.state = ProductStateEnum.SOLD.name
+            ...
+        elif action == 'up':
+            ...
+        elif action == 'back':
+            product.state = ProductStateEnum.SHOW.name
+            ...
+        elif action == 'delete':
+            product.state = ProductStateEnum.HIDDEN.name
+            ...
+
+    product.save()
+
+
+@login_required
 def profile_view(request):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    user = request.user
-    try:
-        vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
-    except UserSocialAuth.DoesNotExist:
-        vk_user_id = None
+    if request.POST:
+        process_product_buttons(request)
 
-    vk_seller = None
-    if vk_user_id:
-        try:
-            vk_seller = Sellers.objects.get(vk_id=vk_user_id)
-        except Sellers.DoesNotExist:
-            vk_seller = None
+    sellers = context_processors.sellers(request)
 
-    tg_seller = None
-    tg_username = None
-    try:
-        tg_user_id = int(user.social_auth.get(provider='telegram').uid)
-        extra_data = user.social_auth.get(provider='telegram').extra_data
-        if 'username' in extra_data:
-            if len(extra_data['username']) != 0:
-                tg_username = extra_data['username'][0]
-    except UserSocialAuth.DoesNotExist:
-        tg_user_id = None
+    vk_user_id = sellers.get('vk_user_id', None)
+    tg_user_id = sellers.get('tg_user_id', None)
+
+    tg_goods = []
+    vk_goods = []
+
     if tg_user_id:
-        try:
-            tg_seller = TgSellers.objects.get(tg_user_id=tg_user_id)
-        except TgSellers.DoesNotExist:
-            tg_seller = None
-
-    tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
-    vk_goods = BarahlochannelGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
+        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+    if vk_user_id:
+        vk_goods = BarahlochannelGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
 
-    # get goods for this profile
-    # and pagination
     paginator = Paginator(goods, 15*2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'profile.html', {
-        'vk_user_id': vk_user_id,
-        'tg_user_id': tg_user_id,
-        'tg_username': tg_username,
-        'vk_seller': vk_seller,
-        'tg_seller': tg_seller,
         'goods': page_obj,
         'channel': _CHANNEL
     })

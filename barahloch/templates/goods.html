@@ -13,97 +13,9 @@
     {% endif %}
     <div class="col-4">
         {% if g.is_telegram %}
-            <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id %}">
-                <h4><b> {{ g.date }} </b></h4>
-                <div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
-            </a>
-            <div class="mt-2 mb-2" >
-                  {% if show_duplicates %}
-                  {% if g.has_duplicates %}
-                  <a href="{% url 'goods_hash' photo_hash=g.hash %}">дубли<b>({{g.duplicates_number}})</b></a>
-                  {% endif %}
-                  {% endif %}
-                  </div>
-            <div class="mt-2 mb-2">
-                {% if show_seller %}
-                <p>
-                    <b>Продавец:</b>
-                    {{g.tg_user.full_name}}
-                    {% if g.tg_user.username %}
-                    |
-                    <a href="https://t.me/{{g.tg_user.username}}" target="_blank">
-                        Telegram
-                    </a>
-                    {% endif %}
-                    |
-                    <a href="{% url 'telegram_seller_detail' tg_user_id=g.tg_user.tg_user_id %}">история</a>
-                </p>
-                {% endif %}
-                <p>
-                    <b>Цена:</b> {{ g.price }} {{g.currency}}
-                </p>
-                <p>
-                    <b>Категория: </b>
-                    <a href="{% url 'telegram_goods_category' category=g.category %}">
-                        {{ g.get_category_display }}
-                    </a>
-                </p>
-                <p>
-                    <b>Город: </b> {{ g.tg_user.city.title }}
-                </p>
-                <p>
-                    <b>Отправка: </b> {{ g.get_ship_display }}
-                </p>
-                <p class="text-break"> <b>Название: </b> {{ g.caption }}</p>
-                <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:100 }}
-                    <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id  %}">
-                        подробнее...
-                    </a>
-                </p>
-            </div>
+            {% include "telegram/good.html" with g=g show_seller=show_seller channel=channel show_duplicates=True %}
         {% else %}
-            <div>
-                <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
-                    <h4><b> {{ g.date }} </b></h4>
-                    <div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
-                </a>
-            </div>
-            <div class="mt-2 mb-2" >
-                {% if show_duplicates %}
-                {% if g.has_duplicates %}
-                <a href="{% url 'goods_hash' photo_hash=g.hash %}">дубли<b>({{g.duplicates_number}})</b></a>
-                {% endif %}
-                {% endif %}
-            </div>
-            <div>
-                {% if show_seller %}
-                <p>
-                    <b>Продавец: </b>
-                    <a href="https://vk.com/id{{ g.seller.vk_id }}">{{g.seller.first_name}} {{g.seller.last_name}}</a>
-                    |
-                    <a href="{% url 'seller_detail' pk=g.seller.vk_id %}">история</a>
-                </p>
-                {% endif %}
-            </div>
-            {% if g.descr  %}
-            <div>
-                <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:30 }}
-                    <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
-                        подробнее...
-                    </a>
-                </p>
-            </div>
-            {% endif %}
-
-            {% if g.comments and not g.descr %}
-            <div>
-                <p class="text-break"> <b>Комментарии: </b> {{ g.comments|truncatewords_html:30 }}
-                    <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
-                        подробнее...
-                    </a>
-                </p>
-            </div>
-            {% endif %}
+            {% include "vkontakte/good.html" with g=g show_seller=show_seller channel=channel show_duplicates=True %}
         {% endif %}
     </div>
     {% endfor %}

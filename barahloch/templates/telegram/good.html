@@ -1,0 +1,65 @@
+<a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id %}">
+    <h4><b> {{ g.date }} </b></h4>
+</a>
+
+{% include "good_state.html" %}
+
+<a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id %}">
+<div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
+</a>
+
+
+{% if user.is_superuser %}
+    {% include "good_buttons.html" %}
+{% else %}
+    {% if tg_seller %}
+        {% ifequal tg_seller.tg_user_id g.tg_user.tg_user_id %}
+            {% include "good_buttons.html" %}
+        {% endifequal %}
+    {% endif %}
+{% endif %}
+
+
+<div class="mt-2 mb-2" >
+    {% if show_duplicates %}
+    {% if g.has_duplicates %}
+    <a href="{% url 'goods_hash' photo_hash=g.hash %}">дубли<b>({{g.duplicates_number}})</b></a>
+    {% endif %}
+    {% endif %}
+</div>
+<div class="mt-2 mb-2">
+    {% if show_seller %}
+    <p>
+        <b>Продавец:</b>
+        {{g.tg_user.full_name}}
+        {% if g.tg_user.username %}
+        |
+        <a href="https://t.me/{{g.tg_user.username}}" target="_blank">
+            Telegram
+        </a>
+        {% endif %}
+        |
+        <a href="{% url 'telegram_seller_detail' tg_user_id=g.tg_user.tg_user_id %}">история</a>
+    </p>
+    {% endif %}
+    <p>
+        <h4 class="text-break">{{ g.caption }}</h4>
+        <h3>{{ g.price }} {{g.currency}}</h3>
+    </p>
+    <p>
+        <b>Категория: </b>
+        <a href="{% url 'telegram_goods_category' category=g.category %}">
+            {{ g.get_category_display }}
+        </a>
+    </p>
+    <p>
+        <b>Город: </b> {{ g.tg_user.city.title }}, отправка: {{ g.get_ship_display|lower }}
+    </p>
+    <p>
+    </p>
+    <p class="text-break">{{ g.descr|truncatewords_html:100 }}
+        <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id  %}">
+            подробнее...
+        </a>
+    </p>
+</div>

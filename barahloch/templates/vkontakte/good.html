@@ -1,0 +1,57 @@
+<a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+    <h4><b> {{ g.date }} </b></h4>
+</a>
+
+{% include "good_state.html" %}
+
+<a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+    <div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
+</a>
+
+{% if user.is_superuser %}
+    {% include "good_buttons.html" %}
+{% else %}
+    {% if vk_seller %}
+        {% ifequal vk_seller.vk_id g.seller.vk_id %}
+            {% include "good_buttons.html" %}
+        {% endifequal %}
+    {% endif %}
+{% endif %}
+
+
+<div class="mt-2 mb-2" >
+    {% if show_duplicates %}
+    {% if g.has_duplicates %}
+    <a href="{% url 'goods_hash' photo_hash=g.hash %}">дубли<b>({{g.duplicates_number}})</b></a>
+    {% endif %}
+    {% endif %}
+</div>
+<div>
+    {% if show_seller %}
+    <p>
+        <b>Продавец: </b>
+        <a href="https://vk.com/id{{ g.seller.vk_id }}">{{g.seller.first_name}} {{g.seller.last_name}}</a>
+        |
+        <a href="{% url 'seller_detail' pk=g.seller.vk_id %}">история</a>
+    </p>
+    {% endif %}
+</div>
+{% if g.descr  %}
+<div>
+    <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:30 }}
+        <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+            подробнее...
+        </a>
+    </p>
+</div>
+{% endif %}
+
+{% if g.comments and not g.descr %}
+<div>
+    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|truncatewords_html:30 }}
+        <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
+            подробнее...
+        </a>
+    </p>
+</div>
+{% endif %}

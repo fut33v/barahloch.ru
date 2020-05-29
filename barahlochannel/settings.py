@@ -14,18 +14,20 @@ import os
 from enum import Enum
 import environ
 
+
 env = environ.Env(DEBUG=(bool, False))
 root = environ.Path(__file__) - 2
 environ.Env.read_env()
 
 
 class ChannelEnum(Enum):
-    FIX_SHOSSE = 0,
+    FIX = 0,
     MTB = 1,
     DEBUG = 2
 
 
-CHANNEL = ChannelEnum.DEBUG
+DOMAIN = env.str('DOMAIN')
+CHANNEL = ChannelEnum[env.str('CHANNEL')]
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,13 +42,7 @@ SECRET_KEY = env.str('SECRET_KEY', '!!! SET YOUR SECRET_KEY !!!')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['mtb.barahloch.ru',
-                 'barahloch.ru',
-                 'localhost',
-                 'localhost.localdomain',
-                 '127.0.0.1',
-                 '*.ngrok.io',
-                 '158af4ed3a5e.ngrok.io']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 # Application definition
 
@@ -85,6 +81,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+
+                'barahloch.context_processors.domain',
+                'barahloch.context_processors.sellers',
             ],
         },
     },
@@ -98,7 +97,7 @@ DATABASE_NAME = ''
 
 if CHANNEL == ChannelEnum.DEBUG:
     DATABASE_NAME = 'barahl0'
-elif CHANNEL == ChannelEnum.FIX_SHOSSE:
+elif CHANNEL == ChannelEnum.FIX:
     DATABASE_NAME = 'barahlochannel'
 elif CHANNEL == ChannelEnum.MTB:
     DATABASE_NAME = 'barahlochannel_mtb'
@@ -162,8 +161,8 @@ SOCIAL_AUTH_VK_OAUTH2_KEY = env.str('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = env.str('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = env.str('SOCIAL_AUTH_TELEGRAM_BOT_TOKEN')
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/profile'
+LOGIN_URL = 'login_view'
+LOGIN_REDIRECT_URL = 'profile_view'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
 
