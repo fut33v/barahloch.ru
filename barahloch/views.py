@@ -25,6 +25,81 @@ elif settings.CHANNEL == ChannelEnum.DEBUG:
     _CHANNEL = "barahl0"
 
 
+def process_product_buttons(request):
+    if not request.POST:
+        return
+
+    product_type = request.POST.get('type', None)
+    if not product_type:
+        return
+
+    product = None
+
+    if product_type == 'telegram':
+        product_id = request.POST.get('id', None)
+        if not product_id:
+            return
+        try:
+            product = TgGoods.objects.get(tg_post_id=product_id)
+        except TgGoods.DoesNotExist:
+            product = None
+
+    elif product_type == 'vkontakte':
+        product_id = request.POST.get('id', None)
+        if not product_id:
+            return
+        ow_ph_id = product_id.split('_')
+        if len(ow_ph_id) != 2:
+            return
+        owner_id = ow_ph_id[0]
+        photo_id = ow_ph_id[1]
+        try:
+            product = BarahlochannelGoods.objects.get(vk_owner_id=owner_id, vk_photo_id=photo_id)
+        except BarahlochannelGoods.DoesNotExist:
+            product = None
+
+    if not product:
+        return
+
+    products = None
+    if isinstance(product, BarahlochannelGoods):
+        products = BarahlochannelGoods.objects.filter(hash=product.hash)
+    elif isinstance(product, TgGoods):
+        products = BarahlochannelGoods.objects.filter(hash=product.hash)
+
+    if not products:
+        return
+
+    action = request.POST.get('action', None)
+    state = None
+    if action:
+        if action == 'sold':
+            state = ProductStateEnum.SOLD.name
+        elif action == 'up':
+            ...
+        elif action == 'back':
+            state = ProductStateEnum.SHOW.name
+        elif action == 'delete':
+            state = ProductStateEnum.HIDDEN.name
+
+    if not state:
+        return
+
+    for p in products:
+        p.state = state
+        p.save()
+    # product.save()
+
+
+def process_product_buttons_decorator(func):
+    def wrapper(*args, **kwargs):
+        request = args[0]
+        if request.POST:
+            process_product_buttons(request)
+        return func(*args, **kwargs)
+    return wrapper
+
+
 def sellers_list(request):
     sellers_for_goods = _GOODS.objects.values('seller_id')
 
@@ -38,6 +113,7 @@ def sellers_list(request):
     return render(request, 'vkontakte/sellers_list.html', {'sellers': page_obj})
 
 
+@process_product_buttons_decorator
 def seller_detail(request, pk):
     seller = get_object_or_404(Sellers, pk=pk)
     goods = _GOODS.objects.filter(seller_id=seller.vk_id).order_by('-date')
@@ -67,6 +143,7 @@ def cities_list(request):
     return render(request, 'city/cities_list.html', {'cities': cities})
 
 
+@process_product_buttons_decorator
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
     sellers = Sellers.objects.filter(city_id=pk)
@@ -93,10 +170,8 @@ def city_sellers(request, pk):
     return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
 
 
+@process_product_buttons_decorator
 def goods_list(request):
-    if request.POST:
-        process_product_buttons(request)
-
     goods = _GOODS.objects.exclude(state='HIDDEN').order_by('-date')
     tg_goods = TgGoods.objects.exclude(state='HIDDEN').order_by('-date')
 
@@ -121,12 +196,14 @@ def goods_list(request):
         'channel': channel})
 
 
+@process_product_buttons_decorator
 def goods_hash(request, photo_hash):
     goods = _GOODS.objects.filter(hash=photo_hash).order_by('-date')
     channel = _CHANNEL
     return render(request, 'goods_hash.html', {'goods': goods, 'channel': channel})
 
 
+@process_product_buttons_decorator
 def goods_duplicates(request):
     hash_counter = \
         _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=1)
@@ -178,6 +255,7 @@ def albums_list(request):
     return render(request, 'albums/albums_list.html', {'albums': albums, 'groups': groups})
 
 
+@process_product_buttons_decorator
 def telegram_goods_list(request):
     goods = TgGoods.objects.all().order_by('-date')
 
@@ -196,6 +274,7 @@ def telegram_good_detail(request, tg_post_id):
     return render(request, 'telegram/good_detail.html', {'good': good, 'channel': channel})
 
 
+@process_product_buttons_decorator
 def telegram_goods_category(request, category):
     goods = TgGoods.objects.filter(category=category).order_by('-date')
 
@@ -208,6 +287,7 @@ def telegram_goods_category(request, category):
     return render(request, 'telegram/goods_list.html', {'goods': page_obj, 'channel': channel})
 
 
+@process_product_buttons_decorator
 def telegram_seller_detail(request, tg_user_id):
     seller = get_object_or_404(TgSellers, pk=tg_user_id)
     goods = TgGoods.objects.filter(tg_user_id=seller.tg_user_id).order_by('-date')
@@ -239,59 +319,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
-
-
-def process_product_buttons(request):
-    if not request.POST:
-        return
-
-    product_type = request.POST.get('type', None)
-    if not product_type:
-        return
-
-    product = None
-
-    if product_type == 'telegram':
-        product_id = request.POST.get('id', None)
-        if not product_id:
-            return
-        try:
-            product = TgGoods.objects.get(tg_post_id=product_id)
-        except TgGoods.DoesNotExist:
-            product = None
-
-    elif product_type == 'vkontakte':
-        product_id = request.POST.get('id', None)
-        if not product_id:
-            return
-        ow_ph_id = product_id.split('_')
-        if len(ow_ph_id) != 2:
-            return
-        owner_id = ow_ph_id[0]
-        photo_id = ow_ph_id[1]
-        try:
-            product = BarahlochannelGoods.objects.get(vk_owner_id=owner_id, vk_photo_id=photo_id)
-        except BarahlochannelGoods.DoesNotExist:
-            product = None
-
-    if not product:
-        return
-
-    action = request.POST.get('action', None)
-    if action:
-        if action == 'sold':
-            product.state = ProductStateEnum.SOLD.name
-            ...
-        elif action == 'up':
-            ...
-        elif action == 'back':
-            product.state = ProductStateEnum.SHOW.name
-            ...
-        elif action == 'delete':
-            product.state = ProductStateEnum.HIDDEN.name
-            ...
-
-    product.save()
 
 
 @login_required
