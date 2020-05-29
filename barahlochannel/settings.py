@@ -25,7 +25,6 @@ class ChannelEnum(Enum):
     MTB = 1,
     DEBUG = 2
 
-
 DOMAIN = env.str('DOMAIN')
 CHANNEL = ChannelEnum[env.str('CHANNEL')]
 
@@ -83,6 +82,7 @@ TEMPLATES = [
                 'social_django.context_processors.login_redirect',
 
                 'barahloch.context_processors.domain',
+                'barahloch.context_processors.telegram_bot_name',
                 'barahloch.context_processors.sellers',
             ],
         },
@@ -166,3 +166,4 @@ LOGIN_REDIRECT_URL = 'profile_view'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
 
+TELEGRAM_BOT_NAME = env.str('TELEGRAM_BOT_NAME')

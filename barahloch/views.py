@@ -108,18 +108,17 @@ def goods_list(request):
     page_obj = paginator.get_page(page_number)
 
     channel = _CHANNEL
-    vk_user_id = None
-    if request.user.is_authenticated:
-        user = request.user
-        try:
-            vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
-        except UserSocialAuth.DoesNotExist:
-            vk_user_id = None
+    # vk_user_id = None
+    # if request.user.is_authenticated:
+    #     user = request.user
+    #     try:
+    #         vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
+    #     except UserSocialAuth.DoesNotExist:
+    #         vk_user_id = None
 
     return render(request, 'goods_list.html', {
         'goods': page_obj,
-        'channel': channel,
-        'vk_user_id': vk_user_id})
+        'channel': channel})
 
 
 def goods_hash(request, photo_hash):

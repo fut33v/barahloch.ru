@@ -1,14 +1,20 @@
 from social_django.models import UserSocialAuth
 
 from barahloch.models import Sellers, TgSellers
-from barahlochannel.settings import DOMAIN
+from barahlochannel.settings import DOMAIN, TELEGRAM_BOT_NAME
 
 
 def domain(request):
     return {'domain': DOMAIN}
 
 
+def telegram_bot_name(request):
+    return {'telegram_bot_name': TELEGRAM_BOT_NAME}
+
+
 def sellers(request):
+    if not request.user.is_authenticated:
+        return {}
     user = request.user
     try:
         vk_user_id = int(user.social_auth.get(provider='vk-oauth2').uid)
