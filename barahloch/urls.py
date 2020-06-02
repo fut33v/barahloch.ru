@@ -28,6 +28,9 @@ urlpatterns = [
     path('login', views.login_view, name='login_view'),
     path('logout', views.logout_view, name='logout_view'),
 
+    path('adminka', views.admin_view, name='admin_view'),
+    path('adminka/hidden_goods', views.admin_hidden_goods, name='admin_hidden_goods'),
+
     path('', include('social_django.urls')),
 
 ]

@@ -1,0 +1,35 @@
+{% load static %}
+
+{% with request.resolver_match.view_name as view_name %}
+
+<header>
+    <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+
+        <a class="navbar-brand" href="/">barahloch.ru</a>
+        <span class="navbar-brand">🔞Админка🔞</span>
+
+        <ul class="navbar-nav mr-auto">
+
+            {% ifequal view_name "admin_view" %}
+            <li class="nav-item active">
+                {% else %}
+            <li class="nav-item">
+                {% endifequal %}
+                <a class="nav-link" href="{% url 'admin_view' %}">Пользователи<span class="sr-only">(current)</span></a>
+            </li>
+
+            {% ifequal view_name "admin_hidden_goods" %}
+            <li class="nav-item active">
+                {% else %}
+            <li class="nav-item">
+                {% endifequal %}
+                <a class="nav-link" href="{% url 'admin_hidden_goods' %}">Удаленные товары<span class="sr-only">(current)</span></a>
+            </li>
+
+
+        </ul>
+    </nav>
+</header>
+
+
+{% endwith %}

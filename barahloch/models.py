@@ -126,7 +126,7 @@ class GoodsManager(models.Manager):
             return result[0]
 
 
-class BarahlochannelGoods(models.Model):
+class VkGoods(models.Model):
     vk_owner_id = models.IntegerField()
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
@@ -144,10 +144,10 @@ class BarahlochannelGoods(models.Model):
     def has_duplicates(self):
         if self.hash is None:
             return False
-        return BarahlochannelGoods.objects.has_duplicates(self.hash) != 1
+        return VkGoods.objects.has_duplicates(self.hash) != 1
 
     def duplicates_number(self):
-        return BarahlochannelGoods.objects.filter(hash=self.hash).count()
+        return VkGoods.objects.filter(hash=self.hash).count()
 
     def get_preview_photo(self):
         if not self.photo_preview:
@@ -196,7 +196,7 @@ class Sellers(models.Model):
         return False
 
     def goods_counter(self):
-        return BarahlochannelGoods.objects.filter(seller__vk_id=self.vk_id).count()
+        return VkGoods.objects.filter(seller__vk_id=self.vk_id).count()
 
     class Meta:
         managed = False

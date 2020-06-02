@@ -92,15 +92,15 @@ header {
 .vk-logo {
     width: 3vw;
 }
-
 .vk-logo-sellers {
     width: 3vw;
 }
-
+.vk-logo-user {
+    width: 2vw;
+}
 .vk-logo-goods {
     width: 4vw;
 }
-
 .link-img {
     text-decoration: none !important;
 }

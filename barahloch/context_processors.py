@@ -1,7 +1,7 @@
 from social_django.models import UserSocialAuth
 
 from barahloch.models import Sellers, TgSellers
-from barahlochannel.settings import DOMAIN, TELEGRAM_BOT_NAME
+from barahlochannel.settings import DOMAIN, TELEGRAM_BOT_NAME, CHANNEL_NAME
 
 
 def domain(request):
@@ -9,7 +9,8 @@ def domain(request):
 
 
 def telegram_bot_name(request):
-    return {'telegram_bot_name': TELEGRAM_BOT_NAME}
+    return {'telegram_bot_name': TELEGRAM_BOT_NAME,
+            'channel': CHANNEL_NAME}
 
 
 def sellers(request):

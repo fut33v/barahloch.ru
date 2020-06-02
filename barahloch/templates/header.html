@@ -51,6 +51,12 @@
         <a class="nav-link" href="{% url 'goods_duplicates' %}">Дубликаты</a>
     </li>
 
+    {% if user.is_superuser %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin_view' %}">Админка</a>
+    </li>
+    {% endif %}
+
 </ul>
 
 <span class="navbar-text">

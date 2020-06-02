@@ -14,7 +14,6 @@ import os
 from enum import Enum
 import environ
 
-
 env = environ.Env(DEBUG=(bool, False))
 root = environ.Path(__file__) - 2
 environ.Env.read_env()
@@ -25,8 +24,24 @@ class ChannelEnum(Enum):
     MTB = 1,
     DEBUG = 2
 
+
 DOMAIN = env.str('DOMAIN')
 CHANNEL = ChannelEnum[env.str('CHANNEL')]
+
+if CHANNEL == ChannelEnum.FIX:
+    CHANNEL_NAME = "barahlochannel"
+elif CHANNEL == ChannelEnum.MTB:
+    CHANNEL_NAME = "barahlochannel_mtb"
+elif CHANNEL == ChannelEnum.DEBUG:
+    CHANNEL_NAME = "barahl0"
+
+DATABASE_NAME = ''
+if CHANNEL == ChannelEnum.DEBUG:
+    DATABASE_NAME = 'barahl0'
+elif CHANNEL == ChannelEnum.FIX:
+    DATABASE_NAME = 'barahlochannel'
+elif CHANNEL == ChannelEnum.MTB:
+    DATABASE_NAME = 'barahlochannel_mtb'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +51,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('SECRET_KEY', '!!! SET YOUR SECRET_KEY !!!')
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
@@ -93,14 +107,6 @@ WSGI_APPLICATION = 'barahlochannel.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-DATABASE_NAME = ''
-
-if CHANNEL == ChannelEnum.DEBUG:
-    DATABASE_NAME = 'barahl0'
-elif CHANNEL == ChannelEnum.FIX:
-    DATABASE_NAME = 'barahlochannel'
-elif CHANNEL == ChannelEnum.MTB:
-    DATABASE_NAME = 'barahlochannel_mtb'
 
 DATABASES = {
     'default': {
