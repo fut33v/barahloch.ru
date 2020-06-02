@@ -13,8 +13,31 @@
     <div class="col-sd-4">
         <div class="seller">
                 <div class="row">
+                    {% if s.is_telegram %}
+                    <img src="{% static '150.jpg' %}" class="seller-photo rounded-circle col-5"/>
+                    {% else %}
                     <img src="{{ s.photo }}" class="seller-photo rounded-circle col-5"/>
+                    {% endif %}
                     <div class="col">
+                        {% if s.is_telegram %}
+                        <div>
+                            <h4 class="text-break">
+                                {{ s.full_name }}
+                                ({{s.counter}})
+                            </h4>
+                            <h5>
+                                <a href="https://t.me/{{ s.username }}">
+                                    Telegram
+                                    <img class="vk-logo-sellers" src="{% static 'tg-logo.svg' %}" alt="Telegram"/>
+                                </a>
+                            </h5>
+                            {% if s.city and show_city %}
+                            <h5><a href="{% url 'city_page' pk=s.city.id %}">{{s.city.title}}</a></h5>
+                            {% endif %}
+                            <h5><a href="{% url 'telegram_seller_detail' tg_user_id=s.tg_user_id %}">История</a></h5>
+                        </div>
+<!--                        </div>-->
+                        {% else %}
                         <div>
                             <h4 class="text-break">
                             {% if s.is_group %}
@@ -23,28 +46,26 @@
                             {{ s.first_name }} {{ s.last_name }}
                             {% endif %}
                             ({{s.counter}})
-                            {% if s.is_group %}
-                            <a href="https://vk.com/public{{ s.vk_id|neg }}">
-                                <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
-                            </a>
-                            {% else %}
-                            <a href="https://vk.com/id{{ s.vk_id }}">
-                                <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
-                            </a>
-                            {% endif %}
                             </h4>
-                        </div>
-                        {% if s.city %}
-                        <div>
+                        {% if s.is_group %}
+                        <a href="https://vk.com/public{{ s.vk_id|neg }}" class="text-decoration-none">
+                            <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                        </a>
+                        {% else %}
+                        <h5>
+                            <a href="https://vk.com/id{{ s.vk_id }}" class="text-decoration-none">
+                            Вконтакте
+                            <img class="vk-logo-sellers" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
+                        </a>
+                        </h5>
+                        {% endif %}
+
+                        {% if s.city and show_city %}
                             <h5><a href="{% url 'city_page' pk=s.city.id %}">{{s.city.title}}</a></h5>
+                        {% endif %}
+                            <h5><a href="{% url 'seller_detail' pk=s.vk_id %}">История</a></h5>
                         </div>
                         {% endif %}
-                        <div>
-                            <a href="{% url 'seller_detail' pk=s.vk_id %}">История</a>
-                        </div>
-                        <div>
-                            <h4></h4>
-                        </div>
                     </div>
                 </div>
         </div>

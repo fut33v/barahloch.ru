@@ -15,7 +15,6 @@ from .models import Sellers, VkGoods, BarahlochannelAlbums, Groups, Cities, TgGo
 
 from itertools import chain
 
-_GOODS = VkGoods
 _ALBUMS = BarahlochannelAlbums
 
 if settings.CHANNEL == ChannelEnum.FIX:
@@ -101,11 +100,76 @@ def process_product_buttons_decorator(func):
     return wrapper
 
 
-def sellers_list(request):
-    sellers_for_goods = _GOODS.objects.values('seller_id')
+def get_user_goods(request):
+    sellers = context_processors.sellers(request)
 
-    sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
-    sellers = sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+    vk_user_id = sellers.get('vk_user_id', None)
+    tg_user_id = sellers.get('tg_user_id', None)
+
+    tg_goods = []
+    vk_goods = []
+
+    if tg_user_id:
+        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+    if vk_user_id:
+        vk_goods = VkGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
+    return goods
+
+
+def get_all_seller_goods(vk_user_id=None, tg_user_id=None):
+    if not vk_user_id and not tg_user_id:
+        return None
+
+    vk_goods = []
+    tg_goods = []
+
+    if vk_user_id:
+        vk_goods = VkGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
+        try:
+            vk_user = UserSocialAuth.objects.get(provider='vk-oauth2', uid=vk_user_id)
+        except UserSocialAuth.DoesNotExist:
+            vk_user = None
+        if vk_user:
+            try:
+                tg_user = vk_user.user.social_auth.get(provider='telegram')
+            except UserSocialAuth.DoesNotExist:
+                tg_user = None
+            if tg_user:
+                tg_goods = TgGoods.objects.filter(tg_user_id=tg_user.uid).order_by('-date')
+
+    elif tg_user_id:
+        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+        try:
+            tg_user = UserSocialAuth.objects.get(provider='telegram', uid=tg_user_id)
+        except UserSocialAuth.DoesNotExist:
+            tg_user = None
+        if tg_user:
+            try:
+                vk_user = tg_user.user.social_auth.get(provider='vk-oauth2')
+            except UserSocialAuth.DoesNotExist:
+                vk_user = None
+            if vk_user:
+                vk_goods = VkGoods.objects.filter(seller_id=vk_user.uid).order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
+    return goods
+
+
+def sellers_list(request):
+    sellers_for_goods = VkGoods.objects.values('seller_id')
+
+    vk_sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
+    vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+
+    tg_sellers = TgSellers.objects.all().annotate(counter=Count('tggoods')).order_by('-counter')
+
+    sellers = list(chain(tg_sellers, vk_sellers))
 
     paginator = Paginator(sellers, 4*30)
     page_number = request.GET.get('page')
@@ -117,14 +181,8 @@ def sellers_list(request):
 @process_product_buttons_decorator
 def seller_detail(request, pk):
     seller = get_object_or_404(Sellers, pk=pk)
-    goods = _GOODS.objects.filter(seller_id=seller.vk_id).order_by('-date')
 
-    city = None
-    if seller.city_id:
-        try:
-            city = Cities.objects.get(id=seller.city_id)
-        except Cities.DoesNotExist:
-            city = None
+    goods = get_all_seller_goods(vk_user_id=seller.vk_id)
 
     paginator = Paginator(goods, 1*30)
 
@@ -132,11 +190,11 @@ def seller_detail(request, pk):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'vkontakte/seller_detail.html', {
-        'seller': seller, 'goods': page_obj, 'city': city, 'pagination': True})
+        'seller': seller, 'goods': page_obj, 'pagination': True})
 
 
 def cities_list(request):
-    sellers_for_goods = _GOODS.objects.values('seller_id')
+    sellers_for_goods = VkGoods.objects.values('seller_id')
     cities_for_goods = Sellers.objects.filter(vk_id__in=sellers_for_goods).values('city_id')
     cities = Cities.objects.filter(id__in=cities_for_goods).order_by('id')
 
@@ -146,9 +204,15 @@ def cities_list(request):
 @process_product_buttons_decorator
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
-    sellers = Sellers.objects.filter(city_id=pk)
+    vk_sellers = Sellers.objects.filter(city_id=pk)
+    tg_sellers = TgSellers.objects.filter(city_id=pk)
 
-    goods = _GOODS.objects.filter(seller_id__in=sellers).order_by('-date')
+    vk_goods = VkGoods.objects.filter(seller_id__in=vk_sellers, state='SHOW').order_by('-date')
+    tg_goods = TgGoods.objects.filter(tg_user_id__in=tg_sellers, state='SHOW').order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
     count = goods.count
 
     paginator = Paginator(goods, 11*3)
@@ -161,17 +225,24 @@ def city_page(request, pk):
 
 def city_sellers(request, pk):
     city = get_object_or_404(Cities, pk=pk)
-    sellers_for_goods = _GOODS.objects.values('seller_id')
-    sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
-    sellers = sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+
+    sellers_for_goods = VkGoods.objects.values('seller_id')
+    vk_sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
+    vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+
+    tg_sellers = TgSellers.objects.filter(city_id=pk)
+    tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
+
+    sellers = list(chain(tg_sellers, vk_sellers))
+    # sellers.sort(key=lambda s: s.counter, reverse=True)
 
     return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
 
 
 @process_product_buttons_decorator
 def goods_list(request):
-    vk_goods = _GOODS.objects.exclude(state='HIDDEN').order_by('-date')
-    tg_goods = TgGoods.objects.exclude(state='HIDDEN').order_by('-date')
+    vk_goods = VkGoods.objects.filter(state='SHOW').order_by('-date')
+    tg_goods = TgGoods.objects.filter(state='SHOW').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -187,17 +258,23 @@ def goods_list(request):
 
 @process_product_buttons_decorator
 def goods_hash(request, photo_hash):
-    goods = _GOODS.objects.filter(hash=photo_hash).order_by('-date')
+    vk_goods = VkGoods.objects.filter(hash=photo_hash).order_by('-date')
+    tg_goods = TgGoods.objects.filter(hash=photo_hash).order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
     return render(request, 'goods_hash.html', {'goods': goods})
 
 
 @process_product_buttons_decorator
 def goods_duplicates(request):
+    actual_goods = VkGoods.objects.filter(state='SHOW')
     hash_counter = \
-        _GOODS.objects.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=1)
+        actual_goods.values("hash").exclude(hash=None).annotate(counter=Count("vk_photo_id")).filter(counter__gt=1)
     hashes = [x['hash'] for x in hash_counter]
 
-    goods_tmp = _GOODS.objects.filter(hash__in=hashes).order_by('-date')
+    goods_tmp = actual_goods.filter(hash__in=hashes).order_by('-date')
     goods = []
     hash_set = set()
     for g in goods_tmp:
@@ -213,7 +290,7 @@ def goods_duplicates(request):
 
 
 def good_detail(request, owner_id, photo_id):
-    good = get_object_or_404(_GOODS, vk_owner_id=owner_id, vk_photo_id=photo_id)
+    good = get_object_or_404(VkGoods, vk_owner_id=owner_id, vk_photo_id=photo_id)
     return render(request, 'vkontakte/good_detail.html', {'good': good})
 
 
@@ -269,7 +346,8 @@ def telegram_goods_category(request, category):
 @process_product_buttons_decorator
 def telegram_seller_detail(request, tg_user_id):
     seller = get_object_or_404(TgSellers, pk=tg_user_id)
-    goods = TgGoods.objects.filter(tg_user_id=seller.tg_user_id).order_by('-date')
+
+    goods = get_all_seller_goods(tg_user_id=seller.tg_user_id)
 
     paginator = Paginator(goods, 1*30)
     page_number = request.GET.get('page')
@@ -306,21 +384,7 @@ def profile_view(request):
     if request.POST:
         process_product_buttons(request)
 
-    sellers = context_processors.sellers(request)
-
-    vk_user_id = sellers.get('vk_user_id', None)
-    tg_user_id = sellers.get('tg_user_id', None)
-
-    tg_goods = []
-    vk_goods = []
-
-    if tg_user_id:
-        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
-    if vk_user_id:
-        vk_goods = VkGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
-
-    goods = list(chain(tg_goods, vk_goods))
-    goods.sort(key=lambda g: g.date, reverse=True)
+    goods = get_user_goods(request)
 
     paginator = Paginator(goods, 15*2)
     page_number = request.GET.get('page')
@@ -333,7 +397,6 @@ def profile_view(request):
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_view(request):
-    # get users
     users = User.objects.all()
 
     for user in users:
@@ -364,6 +427,23 @@ def admin_hidden_goods(request):
 
     vk_goods = VkGoods.objects.filter(state='HIDDEN').order_by('-date')
     tg_goods = TgGoods.objects.filter(state='HIDDEN').order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
+    paginator = Paginator(goods, 11*3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin/hidden_goods.html', {'goods': page_obj})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+@process_product_buttons_decorator
+def admin_sold_goods(request):
+
+    vk_goods = VkGoods.objects.filter(state='SOLD').order_by('-date')
+    tg_goods = TgGoods.objects.filter(state='SOLD').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)

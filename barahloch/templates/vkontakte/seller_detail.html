@@ -36,9 +36,9 @@
                         </a>
                         {% endif %}
                     </h1>
-                    {% if city %}
+                    {% if seller.city %}
                     <h3>
-                        город: <a href="/city/{{city.id}}">{{ city.title }}</a>
+                        город: <a href="/city/{{city.id}}">{{ seller.city.title }}</a>
                     </h3>
                     {% endif %}
                 </div>

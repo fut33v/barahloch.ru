@@ -198,6 +198,9 @@ class Sellers(models.Model):
     def goods_counter(self):
         return VkGoods.objects.filter(seller__vk_id=self.vk_id).count()
 
+    def is_telegram(self):
+        return False
+
     class Meta:
         managed = False
         db_table = 'sellers'
@@ -223,6 +226,16 @@ class TgGoods(models.Model):
     vk_photo_id = models.IntegerField(blank=True, null=True)
     state = models.TextField(blank=True, null=False, choices=STATE_CHOICES)
 
+    objects = GoodsManager()
+
+    def has_duplicates(self):
+        if self.hash is None:
+            return False
+        return TgGoods.objects.has_duplicates(self.hash) != 1
+
+    def duplicates_number(self):
+        return TgGoods.objects.filter(hash=self.hash).count()
+
     def get_preview_photo(self):
         return self.photo_link
 
@@ -243,6 +256,9 @@ class TgSellers(models.Model):
 
     def goods_counter(self):
         return TgGoods.objects.filter(tg_user__tg_user_id=self.tg_user_id).count()
+
+    def is_telegram(self):
+        return True
 
     class Meta:
         managed = False

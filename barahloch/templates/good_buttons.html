@@ -1,10 +1,10 @@
 <form method="post">
     {% csrf_token %}
     <div class="mt-2" >
-        <button type="submit" name="action" value="sold" class="btn btn-success">Продано</button>
+        <button type="submit" name="action" value="sold" class="btn btn-success">Продано/снять с продажи</button>
         <button type="submit" name="action" value="back" class="btn btn-secondary">Вернуть в продажу</button>
 
-        <button type="submit" name="action" value="up" class="btn btn-primary">Апнуть</button>
+<!--        <button type="submit" name="action" value="up" class="btn btn-primary">Апнуть</button>-->
         {% if user.is_superuser %}
             <button type="submit" name="action" value="delete" class="btn btn-danger">Удалить (адм.)</button>
         {% endif %}
