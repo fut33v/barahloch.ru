@@ -1,5 +1,5 @@
 from django import template
-import re
+import re, html
 register = template.Library()
 
 _REGEX_HTTP = re.compile("http")
@@ -54,3 +54,7 @@ def addstr(arg1, arg2):
     """concatenate arg1 & arg2"""
     return str(arg1) + str(arg2)
 
+
+@register.filter(name='unescape')
+def unescape_filter(value):
+    return html.unescape(value)

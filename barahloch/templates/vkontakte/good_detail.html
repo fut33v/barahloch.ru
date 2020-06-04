@@ -14,6 +14,7 @@
 
     <h2> {{ good.date }} </h2>
 
+    {% include "good_state.html" with g=good%}
     <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
 
     <div class="mt-2">
@@ -37,12 +38,12 @@
     </p>
     {% if good.descr %}
     <div>
-        <p class="text-break"><b>Описание: </b> {{ good.descr|bold_numbers|safe }} </p>
+        <p class="text-break"><b>Описание: </b> {{ good.descr|unescape|urlizetrunc:30|bold_numbers|safe }} </p>
     </div>
     {% endif %}
     {% if good.comments %}
     <div>
-        <p class="text-break"><b>Комментарии: </b> {{ good.comments|bold_numbers|safe }} </p>
+        <p class="text-break"><b>Комментарии: </b> {{ good.comments|unescape|urlizetrunc:30|bold_numbers|safe }} </p>
     </div>
     {% endif %}
 </div>

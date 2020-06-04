@@ -1,3 +1,5 @@
+{% load barahloch_extras %}
+
 <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
     <h4><b> {{ g.date }} </b></h4>
 </a>
@@ -38,7 +40,7 @@
 </div>
 {% if g.descr  %}
 <div>
-    <p class="text-break"> <b>Описание: </b> {{ g.descr|truncatewords_html:30 }}
+    <p class="text-break"> <b>Описание: </b> {{ g.descr|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>
@@ -48,7 +50,7 @@
 
 {% if g.comments and not g.descr %}
 <div>
-    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|truncatewords_html:30 }}
+    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe  }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>

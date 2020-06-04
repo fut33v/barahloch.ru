@@ -12,15 +12,23 @@
 
 <div class="content">
 
-    <h2> {{ good.date }} </h2>
+    <h1 class="text-break">
+        <a href="{% url 'telegram_goods_category' category=good.category %}">
+            {{ good.get_category_display }}
+        </a>
+        /
+        {{ good.caption }}
+    </h1>
+    <h5> {{ good.date }} </h5>
+
+    {% include "good_state.html" with g=good%}
 
     <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
 
-
     <div class="mt-2">
-        <p>
-            <b>Цена:</b> {{ good.price }} {{good.currency}}
-        </p>
+        <h2>
+            {{ good.price }} {{good.currency}}
+        </h2>
         <p>
             <b>Продавец:</b>
             {{good.tg_user.full_name}}
@@ -34,13 +42,9 @@
             <a href="{% url 'telegram_seller_detail' tg_user_id=good.tg_user.tg_user_id %}">история</a>
         </p>
         <p>
-            <b>Город: </b> {{ good.tg_user.city.title }}
+            <b>Город: </b> {{ good.tg_user.city.title }} / {{ good.get_ship_display|lower }}
         </p>
-        <p>
-            <b>Отправка: </b> {{ good.get_ship_display }}
-        </p>
-        <p class="text-break"> <b>Название: </b> {{ good.caption }}</p>
-        <p class="text-break"> <b>Описание: </b> {{ good.descr }} </p>
+        <p class="text-break"> {{ good.descr|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }} </p>
     </div>
 
     <div class="mt-2">
@@ -51,6 +55,8 @@
         <a href="{% url 'goods_hash' photo_hash=good.hash %}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
         {% endif %}
     </div>
+
+
 </div>
 
 </body>
