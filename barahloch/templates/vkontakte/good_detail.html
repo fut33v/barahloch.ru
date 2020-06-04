@@ -14,7 +14,7 @@
 
     <h2> {{ good.date }} </h2>
 
-    {% include "good_state.html" with g=good%}
+    {% include "goods/good_state.html" with g=good%}
     <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
 
     <div class="mt-2">
@@ -25,7 +25,10 @@
             <img class="vk-logo-goods" src="{% static 'vk-logo.svg' %}" alt="ВКонтакте"/>
         </a>
         {% if good.has_duplicates %}
-        <a href="{% url 'goods_hash' photo_hash=good.hash %}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
+        {% url 'goods_hash' photo_hash=good.hash as hash_url %}
+        {% if hash_url %}
+            <a href="{{ hash_url }}">см. предыдущие <b>({{good.duplicates_number}})</b></a>
+        {% endif %}
         {% endif %}
     </div>
 
@@ -38,12 +41,12 @@
     </p>
     {% if good.descr %}
     <div>
-        <p class="text-break"><b>Описание: </b> {{ good.descr|unescape|urlizetrunc:30|bold_numbers|safe }} </p>
+        <p class="text-break"><b>Описание: </b> {{ good.descr|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|safe }} </p>
     </div>
     {% endif %}
     {% if good.comments %}
     <div>
-        <p class="text-break"><b>Комментарии: </b> {{ good.comments|unescape|urlizetrunc:30|bold_numbers|safe }} </p>
+        <p class="text-break"><b>Комментарии: </b> {{ good.comments|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|safe }} </p>
     </div>
     {% endif %}
 </div>

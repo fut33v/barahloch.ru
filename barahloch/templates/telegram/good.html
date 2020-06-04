@@ -4,7 +4,7 @@
     <h4><b> {{ g.date }} </b></h4>
 </a>
 
-{% include "good_state.html" %}
+{% include "goods/good_state.html" %}
 
 <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id %}">
 <div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
@@ -12,11 +12,11 @@
 
 
 {% if user.is_superuser %}
-    {% include "good_buttons.html" %}
+    {% include "goods/good_buttons.html" %}
 {% else %}
-    {% if tg_seller %}
-        {% ifequal tg_seller.tg_user_id g.tg_user.tg_user_id %}
-            {% include "good_buttons.html" %}
+    {% if vk_seller %}
+        {% ifequal vk_seller.vk_id g.seller.vk_id %}
+            {% include "goods/good_buttons.html" %}
         {% endifequal %}
     {% endif %}
 {% endif %}

@@ -8,7 +8,7 @@
 {% include "header.html" %}
 
 <div class ="content">
-    {% include "goods.html" with goods=goods show_seller=True %}
+    {% include "goods/goods.html" with goods=goods show_seller=True show_duplicates=True pagination=True %}
 </div>
 
 </body>

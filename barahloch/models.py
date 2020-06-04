@@ -115,6 +115,11 @@ class BarahlochannelAlbums(models.Model):
 
 class GoodsManager(models.Manager):
     def has_duplicates(self, photo_hash):
+        if not photo_hash:
+            return None
+        found_none = photo_hash.find('None')
+        if found_none != -1:
+            return None
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("""

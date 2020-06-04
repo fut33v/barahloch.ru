@@ -4,18 +4,18 @@
     <h4><b> {{ g.date }} </b></h4>
 </a>
 
-{% include "good_state.html" %}
+{% include "goods/good_state.html" %}
 
 <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
     <div class="good-img" style="background-image:url('{{g.get_preview_photo}}')"></div>
 </a>
 
 {% if user.is_superuser %}
-    {% include "good_buttons.html" %}
+    {% include "goods/good_buttons.html" %}
 {% else %}
     {% if vk_seller %}
         {% ifequal vk_seller.vk_id g.seller.vk_id %}
-            {% include "good_buttons.html" %}
+            {% include "goods/good_buttons.html" %}
         {% endifequal %}
     {% endif %}
 {% endif %}
@@ -23,9 +23,12 @@
 
 <div class="mt-2 mb-2" >
     {% if show_duplicates %}
-    {% if g.has_duplicates %}
-    <a href="{% url 'goods_hash' photo_hash=g.hash %}">дубли<b>({{g.duplicates_number}})</b></a>
-    {% endif %}
+        {% if g.has_duplicates %}
+            {% url 'goods_hash' photo_hash=g.hash as hash_url %}
+            {% if hash_url %}
+                <a href="{{ hash_url }}">дубли<b>({{g.duplicates_number}})</b></a>
+            {% endif %}
+        {% endif %}
     {% endif %}
 </div>
 <div>
@@ -40,7 +43,7 @@
 </div>
 {% if g.descr  %}
 <div>
-    <p class="text-break"> <b>Описание: </b> {{ g.descr|unescape|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }}
+    <p class="text-break"> <b>Описание: </b> {{ g.descr|unescape|striptags|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>
@@ -50,7 +53,7 @@
 
 {% if g.comments and not g.descr %}
 <div>
-    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|unescape|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe  }}
+    <p class="text-break"> <b>Комментарии: </b> {{ g.comments|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|truncatewords_html:42|safe  }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>

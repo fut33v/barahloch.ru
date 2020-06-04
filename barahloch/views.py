@@ -244,7 +244,7 @@ def goods_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'goods_list.html', {
+    return render(request, 'goods/goods_list.html', {
         'goods': page_obj
         })
 
@@ -257,7 +257,7 @@ def goods_hash(request, photo_hash):
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
 
-    return render(request, 'goods_hash.html', {'goods': goods})
+    return render(request, 'goods/goods_hash.html', {'goods': goods})
 
 
 @process_product_buttons_decorator
@@ -279,7 +279,9 @@ def goods_duplicates(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'goods_duplicates.html', {'goods': page_obj})
+    for x in page_obj.object_list:
+        print(x.vk_owner_id, x.vk_photo_id, x.hash)
+    return render(request, 'goods/goods_duplicates.html', {'goods': page_obj})
 
 
 def good_detail(request, owner_id, photo_id):

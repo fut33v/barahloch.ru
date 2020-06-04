@@ -58,3 +58,28 @@ def addstr(arg1, arg2):
 @register.filter(name='unescape')
 def unescape_filter(value):
     return html.unescape(value)
+
+
+@register.filter(name='vknames')
+def vknames_filter(value):
+    tokens = value.split(' ')
+    regexp = re.compile(r"\[id([0-9]*)\|(\w+)\]")
+    result = ""
+    for t in tokens:
+        m = regexp.search(t)
+        if m:
+            vk_id = m.group(1)
+            vk_name = m.group(2)
+            link = '<a href="https://vk.com/id{}">{}</a>,'.format(vk_id, vk_name)
+            result += link + " "
+        else:
+            result += t + " "
+    return result
+
+
+@register.filter
+#capitalise the first letter of each sentence in a string
+def capsentence(value):
+    value = value.lower()
+    return ". ".join([sentence.capitalize() for sentence in value.split(". ")])
+
