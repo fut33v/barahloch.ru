@@ -40,13 +40,17 @@
         </h4>
     </p>
     {% if good.descr %}
+    <hr/>
     <div>
-        <p class="text-break"><b>Описание: </b> {{ good.descr|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|safe }} </p>
+        <p class="text-break">
+            {{ good.descr|unescape|striptags|linebreaks|urlizetrunc:30|vknames|safe  }} </p>
     </div>
     {% endif %}
     {% if good.comments %}
+    <hr/>
     <div>
-        <p class="text-break"><b>Комментарии: </b> {{ good.comments|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|safe }} </p>
+        <p class="text-break">
+            {{ good.comments|unescape|striptags|linebreaks|urlizetrunc:30|vknames|safe }} </p>
     </div>
     {% endif %}
 </div>
