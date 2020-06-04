@@ -11,18 +11,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from . import context_processors
-from .models import Sellers, VkGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
+from .models import VkSellers, VkGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
 
 from itertools import chain
 
 _ALBUMS = BarahlochannelAlbums
-
-if settings.CHANNEL == ChannelEnum.FIX:
-    _CHANNEL = "barahlochannel"
-elif settings.CHANNEL == ChannelEnum.MTB:
-    _CHANNEL = "barahlochannel_mtb"
-elif settings.CHANNEL == ChannelEnum.DEBUG:
-    _CHANNEL = "barahl0"
 
 
 def process_product_buttons(request):
@@ -164,7 +157,7 @@ def get_all_seller_goods(vk_user_id=None, tg_user_id=None):
 def sellers_list(request):
     sellers_for_goods = VkGoods.objects.values('seller_id')
 
-    vk_sellers = Sellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
+    vk_sellers = VkSellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
     vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
 
     tg_sellers = TgSellers.objects.all().annotate(counter=Count('tggoods')).order_by('-counter')
@@ -180,7 +173,7 @@ def sellers_list(request):
 
 @process_product_buttons_decorator
 def seller_detail(request, pk):
-    seller = get_object_or_404(Sellers, pk=pk)
+    seller = get_object_or_404(VkSellers, pk=pk)
 
     goods = get_all_seller_goods(vk_user_id=seller.vk_id)
 
@@ -195,7 +188,7 @@ def seller_detail(request, pk):
 
 def cities_list(request):
     sellers_for_goods = VkGoods.objects.values('seller_id')
-    cities_for_goods = Sellers.objects.filter(vk_id__in=sellers_for_goods).values('city_id')
+    cities_for_goods = VkSellers.objects.filter(vk_id__in=sellers_for_goods).values('city_id')
     cities = Cities.objects.filter(id__in=cities_for_goods).order_by('id')
 
     return render(request, 'city/cities_list.html', {'cities': cities})
@@ -204,7 +197,7 @@ def cities_list(request):
 @process_product_buttons_decorator
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
-    vk_sellers = Sellers.objects.filter(city_id=pk)
+    vk_sellers = VkSellers.objects.filter(city_id=pk)
     tg_sellers = TgSellers.objects.filter(city_id=pk)
 
     vk_goods = VkGoods.objects.filter(seller_id__in=vk_sellers, state='SHOW').order_by('-date')
@@ -227,7 +220,7 @@ def city_sellers(request, pk):
     city = get_object_or_404(Cities, pk=pk)
 
     sellers_for_goods = VkGoods.objects.values('seller_id')
-    vk_sellers = Sellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
+    vk_sellers = VkSellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
     vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
 
     tg_sellers = TgSellers.objects.filter(city_id=pk)
@@ -308,8 +301,8 @@ def albums_list(request):
                     a.owner_name = g.name
         else:
             try:
-                seller = Sellers.objects.get(vk_id=a.owner_id)
-            except Sellers.DoesNotExist:
+                seller = VkSellers.objects.get(vk_id=a.owner_id)
+            except VkSellers.DoesNotExist:
                 seller = None
             if seller:
                 a.owner_name = seller.first_name + ' ' + seller.last_name

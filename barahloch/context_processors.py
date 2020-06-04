@@ -1,6 +1,6 @@
 from social_django.models import UserSocialAuth
 
-from barahloch.models import Sellers, TgSellers
+from barahloch.models import VkSellers, TgSellers
 from barahlochannel.settings import DOMAIN, TELEGRAM_BOT_NAME, CHANNEL_NAME
 
 
@@ -25,8 +25,8 @@ def sellers(request):
     vk_seller = None
     if vk_user_id:
         try:
-            vk_seller = Sellers.objects.get(vk_id=vk_user_id)
-        except Sellers.DoesNotExist:
+            vk_seller = VkSellers.objects.get(vk_id=vk_user_id)
+        except VkSellers.DoesNotExist:
             vk_seller = None
 
     tg_seller = None

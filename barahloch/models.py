@@ -131,7 +131,7 @@ class VkGoods(models.Model):
     vk_photo_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
     photo_preview = models.CharField(max_length=1024)
-    seller = models.ForeignKey('Sellers', models.DO_NOTHING)
+    seller = models.ForeignKey('VkSellers', models.DO_NOTHING)
     descr = models.CharField(max_length=6666, blank=True, null=True)
     comments = models.CharField(max_length=1024, blank=True, null=True)
     tg_post_id = models.IntegerField(blank=True, null=True)
@@ -183,7 +183,7 @@ class Groups(models.Model):
         db_table = 'groups'
 
 
-class Sellers(models.Model):
+class VkSellers(models.Model):
     vk_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=256, blank=True, null=True)
     last_name = models.CharField(max_length=256, blank=True, null=True)
