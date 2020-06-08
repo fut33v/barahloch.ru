@@ -59,7 +59,7 @@
     </p>
     <p>
     </p>
-    <p class="text-break">{{ g.descr|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }}
+    <p class="text-break">{{ g.descr|urlizetrunc:30|truncatewords_html:42|safe }}
         <a href="{% url 'telegram_good_detail' tg_post_id=g.tg_post_id  %}">
             подробнее...
         </a>

@@ -44,7 +44,7 @@
         <p>
             <b>Город: </b> {{ good.tg_user.city.title }} / {{ good.get_ship_display|lower }}
         </p>
-        <p class="text-break"> {{ good.descr|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }} </p>
+        <p class="text-break"> {{ good.descr|urlizetrunc:30|truncatewords_html:42|safe }} </p>
     </div>
 
     <div class="mt-2">

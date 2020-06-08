@@ -43,7 +43,7 @@
 </div>
 {% if g.descr  %}
 <div>
-    <p class="text-break">{{ g.descr|unescape|striptags|urlizetrunc:30|bold_numbers|truncatewords_html:42|safe }}
+    <p class="text-break">{{ g.descr|unescape|striptags|urlizetrunc:30|truncatewords_html:42|safe }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>
@@ -53,7 +53,7 @@
 
 {% if g.comments and not g.descr %}
 <div>
-    <p class="text-break">{{ g.comments|unescape|striptags|urlizetrunc:30|vknames|bold_numbers|truncatewords_html:42|safe  }}
+    <p class="text-break">{{ g.comments|unescape|striptags|urlizetrunc:30|vknames|truncatewords_html:42|safe  }}
         <a href="{% url 'good_detail' owner_id=g.vk_owner_id photo_id=g.vk_photo_id %}">
             подробнее...
         </a>
