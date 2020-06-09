@@ -413,6 +413,13 @@ def admin_view(request):
                     user_tg.username = tg_username
         user.user_tg = user_tg
 
+        if user_vk:
+            try:
+                seller_vk = VkSellers.objects.get(vk_id=user_vk.uid)
+            except VkSellers.DoesNotExist:
+                seller_vk = None
+            user.seller_vk = seller_vk
+
     return render(request, 'admin/admin.html', {'users': users})
 
 
