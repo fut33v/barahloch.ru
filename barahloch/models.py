@@ -95,7 +95,7 @@ class ProductStateEnum(Enum):
 STATE_CHOICES = [(c.name, c.value) for c in ProductStateEnum]
 
 
-class BarahlochannelAlbums(models.Model):
+class Albums(models.Model):
     owner_id = models.BigIntegerField(primary_key=True)
     album_id = models.BigIntegerField()
     title = models.CharField(max_length=1024, blank=True, null=True)
@@ -134,6 +134,7 @@ class GoodsManager(models.Manager):
 class VkGoods(models.Model):
     vk_owner_id = models.IntegerField()
     vk_photo_id = models.IntegerField()
+    vk_album_id = models.IntegerField()
     photo_link = models.CharField(max_length=1024)
     photo_preview = models.CharField(max_length=1024)
     seller = models.ForeignKey('VkSellers', models.DO_NOTHING)

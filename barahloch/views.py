@@ -1,21 +1,22 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.core.paginator import Paginator
-
-from django.conf import settings
-from social_django.models import UserSocialAuth, AbstractUserSocialAuth
-
-from barahlochannel.settings import ChannelEnum
-from django.db.models import Count
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, user_passes_test
-
-from . import context_processors
-from .models import VkSellers, VkGoods, BarahlochannelAlbums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
-
 from itertools import chain
 
-_ALBUMS = BarahlochannelAlbums
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Count
+from django.shortcuts import render, get_object_or_404, redirect
+
+from social_django.models import UserSocialAuth
+
+from . import context_processors
+from .models import VkSellers, VkGoods, Albums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
+from .serializers import VkSellersSerializer, VkGoodsSerializer, AlbumsSerializer, CitiesSerializer, TgSellersSerializer, TgGoodsSerializer
+from rest_framework.authtoken.models import Token
+from rest_framework import viewsets
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 def process_product_buttons(request):
@@ -63,16 +64,16 @@ def process_product_buttons(request):
     if not products:
         return
 
-    action = request.POST.get('action', None)
+    button_action = request.POST.get('action', None)
     state = None
-    if action:
-        if action == 'sold':
+    if button_action:
+        if button_action == 'sold':
             state = ProductStateEnum.SOLD.name
-        elif action == 'up':
+        elif button_action == 'up':
             ...
-        elif action == 'back':
+        elif button_action == 'back':
             state = ProductStateEnum.SHOW.name
-        elif action == 'delete':
+        elif button_action == 'delete':
             state = ProductStateEnum.HIDDEN.name
 
     if not state:
@@ -91,6 +92,32 @@ def process_product_buttons_decorator(func):
             process_product_buttons(request)
         return func(*args, **kwargs)
     return wrapper
+
+
+def get_city_goods(city_id):
+    vk_sellers = VkSellers.objects.filter(city_id=city_id)
+    tg_sellers = TgSellers.objects.filter(city_id=city_id)
+
+    vk_goods = VkGoods.objects.filter(seller_id__in=vk_sellers, state='SHOW').order_by('-date')
+    tg_goods = TgGoods.objects.filter(tg_user_id__in=tg_sellers, state='SHOW').order_by('-date')
+
+    goods = list(chain(tg_goods, vk_goods))
+    goods.sort(key=lambda g: g.date, reverse=True)
+
+    return goods
+
+
+def get_city_sellers(city_id):
+    sellers_for_goods = VkGoods.objects.values('seller_id')
+    vk_sellers = VkSellers.objects.filter(city_id=city_id, vk_id__in=sellers_for_goods)
+    vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+
+    tg_sellers = TgSellers.objects.filter(city_id=city_id)
+    tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
+
+    sellers = list(chain(tg_sellers, vk_sellers))
+
+    return sellers
 
 
 def get_user_goods(request):
@@ -197,14 +224,8 @@ def cities_list(request):
 @process_product_buttons_decorator
 def city_page(request, pk):
     city = get_object_or_404(Cities, pk=pk)
-    vk_sellers = VkSellers.objects.filter(city_id=pk)
-    tg_sellers = TgSellers.objects.filter(city_id=pk)
 
-    vk_goods = VkGoods.objects.filter(seller_id__in=vk_sellers, state='SHOW').order_by('-date')
-    tg_goods = TgGoods.objects.filter(tg_user_id__in=tg_sellers, state='SHOW').order_by('-date')
-
-    goods = list(chain(tg_goods, vk_goods))
-    goods.sort(key=lambda g: g.date, reverse=True)
+    goods = get_city_goods(pk)
 
     count = goods.count
 
@@ -219,15 +240,7 @@ def city_page(request, pk):
 def city_sellers(request, pk):
     city = get_object_or_404(Cities, pk=pk)
 
-    sellers_for_goods = VkGoods.objects.values('seller_id')
-    vk_sellers = VkSellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
-    vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
-
-    tg_sellers = TgSellers.objects.filter(city_id=pk)
-    tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
-
-    sellers = list(chain(tg_sellers, vk_sellers))
-    # sellers.sort(key=lambda s: s.counter, reverse=True)
+    sellers = get_city_sellers(pk)
 
     return render(request, 'city/city_sellers.html', {'sellers': sellers, 'city': city})
 
@@ -290,9 +303,9 @@ def good_detail(request, owner_id, photo_id):
 
 
 def albums_list(request):
-    albums = _ALBUMS.objects.all().order_by('owner_id', 'album_id')
+    albums = Albums.objects.all().order_by('owner_id', 'album_id')
 
-    owners = _ALBUMS.objects.values('owner_id')
+    owners = Albums.objects.values('owner_id')
     owners = [-(x['owner_id']) for x in owners]
     groups = Groups.objects.filter(id__in=owners)
 
@@ -380,13 +393,15 @@ def profile_view(request):
         process_product_buttons(request)
 
     goods = get_user_goods(request)
+    token = Token.objects.get(user=request.user)
 
     paginator = Paginator(goods, 15*2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'profile.html', {
-        'goods': page_obj
+        'goods': page_obj,
+        'token': token
     })
 
 
@@ -455,3 +470,120 @@ def admin_sold_goods(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'admin/hidden_goods.html', {'goods': page_obj})
+
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
+
+class ReadAnyWriteAdmin(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        elif request.user.is_staff:
+            return True
+        return False
+
+
+class VkSellerViewSet(viewsets.ModelViewSet):
+    """
+    Продавцы из ВКонтакте.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = VkSellers.objects.annotate(counter=Count('vkgoods')).order_by('-counter')
+    serializer_class = VkSellersSerializer
+
+    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
+    def goods(self, request, pk=None):
+        queryset = VkGoods.objects.filter(seller_id=pk).order_by('-date')
+        serializer_context = {
+            'request': request,
+        }
+        serializer = VkGoodsSerializer(queryset, many=True, context=serializer_context)
+        return Response(serializer.data)
+
+
+class TgSellersViewSet(viewsets.ModelViewSet):
+    """
+    Продавцы из Telegram.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = TgSellers.objects.annotate(counter=Count('tggoods')).order_by('-counter')
+    serializer_class = TgSellersSerializer
+
+    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
+    def goods(self, request, pk=None):
+        queryset = TgGoods.objects.filter(tg_user_id=pk).order_by('-date')
+        serializer_context = {
+            'request': request,
+        }
+        serializer = TgGoodsSerializer(queryset, many=True, context=serializer_context)
+        return Response(serializer.data)
+
+
+class VkGoodsViewSet(viewsets.ModelViewSet):
+    """
+    Товары из ВК.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = VkGoods.objects.exclude(state='HIDDEN').order_by('-date')
+    serializer_class = VkGoodsSerializer
+
+
+class TgGoodsViewSet(viewsets.ModelViewSet):
+    """
+    Товары из Telegram.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = TgGoods.objects.exclude(state='HIDDEN').order_by('-date')
+    serializer_class = TgGoodsSerializer
+
+
+class AlbumsViewSet(viewsets.ModelViewSet):
+    """
+    Список используемых каналом альбомов ВК.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = Albums.objects.order_by('-owner_id')
+    serializer_class = AlbumsSerializer
+
+
+class CitiesViewSet(viewsets.ModelViewSet):
+    """
+    Список городов.
+    """
+    permission_classes = [ReadAnyWriteAdmin]
+    queryset = Cities.objects.order_by('id')
+    serializer_class = CitiesSerializer
+
+    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
+    def goods(self, request, pk=None):
+        city_goods = get_city_goods(pk)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = TgGoodsSerializer(city_goods, many=True, context=serializer_context)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='vk-sellers', url_name='city_vk_sellers')
+    def vk_sellers(self, request, pk=None):
+        sellers_for_goods = VkGoods.objects.values('seller_id')
+        vk_sellers = VkSellers.objects.filter(city_id=pk, vk_id__in=sellers_for_goods)
+        vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
+        serializer_context = {
+            'request': request,
+        }
+        serializer = VkSellersSerializer(vk_sellers, many=True, context=serializer_context)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='tg-sellers', url_name='city_tg_sellers')
+    def tg_sellers(self, request, pk=None):
+        tg_sellers = TgSellers.objects.filter(city_id=pk)
+        tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
+        serializer_context = {
+            'request': request,
+        }
+        serializer = TgSellersSerializer(tg_sellers, many=True, context=serializer_context)
+        return Response(serializer.data)
+

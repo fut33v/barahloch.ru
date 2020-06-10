@@ -1,8 +1,18 @@
 from django.urls import path, register_converter, include
 from . import views, converters
+from rest_framework import routers
 
 register_converter(converters.NegativeIntConverter, 'negint')
 
+router = routers.DefaultRouter()
+
+router.register(r'vk_sellers', views.VkSellerViewSet)
+router.register(r'tg_sellers', views.TgSellersViewSet)
+router.register(r'vk_goods', views.VkGoodsViewSet)
+router.register(r'tg_goods', views.TgGoodsViewSet)
+
+router.register(r'albums', views.AlbumsViewSet)
+router.register(r'cities', views.CitiesViewSet)
 
 urlpatterns = [
     path('', views.goods_list, name='goods_list'),
@@ -33,5 +43,8 @@ urlpatterns = [
     path('adminka/sold_goods', views.admin_sold_goods, name='admin_sold_goods'),
 
     path('', include('social_django.urls')),
+
+    path('api/', include(router.urls)),
+    # path('api/test', views.ExampleView),
 
 ]

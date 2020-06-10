@@ -21,7 +21,7 @@
             <img src="{% static '150.jpg' %}" class="seller-detail-photo rounded-circle col-2"/>
             {% endif %}
 
-        <div class="col-5">
+        <div class="col-4">
             <h2>
                 {% if vk_seller is None and tg_seller is None %}
                     {{user.first_name}} {{user.last_name}}
@@ -66,8 +66,11 @@
             </div>
 
         </div>
-        <div class="col-5">
+        <div class="col-6">
             <ul>
+                <li>
+                    <b>API Token:</b> {{ token }}
+                </li>
                 {% if vk_seller %}
                 <li>
                     <a href="{% url 'seller_detail' pk=vk_seller.vk_id %}">История товаров вКонтакте</a>
