@@ -5,6 +5,7 @@ from rest_framework import routers
 register_converter(converters.NegativeIntConverter, 'negint')
 
 router = routers.DefaultRouter()
+router.APIRootView.permission_classes = [views.ReadAnyWriteAdmin]
 
 router.register(r'vk_sellers', views.VkSellerViewSet)
 router.register(r'tg_sellers', views.TgSellersViewSet)
@@ -45,6 +46,4 @@ urlpatterns = [
     path('', include('social_django.urls')),
 
     path('api/', include(router.urls)),
-    # path('api/test', views.ExampleView),
-
 ]
