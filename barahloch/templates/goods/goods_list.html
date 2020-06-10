@@ -7,7 +7,18 @@
 <body>
 {% include "header.html" %}
 
+
 <div class="content">
+    <div class="md-form mt-5 mb-5">
+        <form>
+            {% if query %}
+                <input class="form-control" type="text" placeholder="{{ query }}" aria-label="{{ query }}" name="query">
+            {% else %}
+                <input class="form-control" type="text" placeholder="Поиск" aria-label="Поиск" name="query">
+            {% endif %}
+        </form>
+    </div>
+
     {% include "goods/goods.html" with goods=goods show_seller=True pagination=True channel=channel show_duplicates=True %}
 </div>
 

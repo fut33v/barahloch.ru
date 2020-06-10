@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.postgres.search import SearchVector
 
 from social_django.models import UserSocialAuth
 
@@ -247,8 +248,14 @@ def city_sellers(request, pk):
 
 @process_product_buttons_decorator
 def goods_list(request):
-    vk_goods = VkGoods.objects.filter(state='SHOW').order_by('-date')
-    tg_goods = TgGoods.objects.filter(state='SHOW').order_by('-date')
+    query = None
+    if 'query' in request.GET:
+        query = request.GET.get('query')
+        vk_goods = VkGoods.objects.annotate(search=SearchVector('descr', 'comments'),).filter(search=query)
+        tg_goods = TgGoods.objects.annotate(search=SearchVector('caption', 'descr'),).filter(search=query)
+    else:
+        vk_goods = VkGoods.objects.filter(state='SHOW').order_by('-date')
+        tg_goods = TgGoods.objects.filter(state='SHOW').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -258,7 +265,8 @@ def goods_list(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'goods/goods_list.html', {
-        'goods': page_obj
+        'goods': page_obj,
+        'query': query
         })
 
 

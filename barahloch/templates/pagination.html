@@ -3,8 +3,13 @@
     <nav>
         <ul class="pagination pagination-lg">
             {% if page.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">&lt;&lt;сюда</a></li>
+                {% if query %}
+                    <li class="page-item"><a class="page-link" href="?page=1&query={{query}}">1</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}&query={{query}}">&lt;&lt;сюда</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">&lt;&lt;сюда</a></li>
+                {% endif %}
             {% endif %}
 
             <li class="page-item active">
@@ -14,8 +19,13 @@
             </li>
 
             {% if page.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">туда&gt;&gt;</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page.paginator.num_pages }}">{{page.paginator.num_pages}}</a></li>
+                {% if query %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}&query={{query}}">туда&gt;&gt;</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page.paginator.num_pages }}&query={{query}}">{{page.paginator.num_pages}}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">туда&gt;&gt;</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page.paginator.num_pages }}">{{page.paginator.num_pages}}</a></li>
+                {% endif %}
             {% endif %}
         </ul>
     </nav>
