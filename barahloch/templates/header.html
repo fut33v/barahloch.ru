@@ -7,7 +7,7 @@
 <header>
 <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
 
-    <a class="navbar-brand" href="/">barahloch.ru</a>
+    <a class="navbar-brand" href="/">{{domain}}</a>
 
 <ul class="navbar-nav mr-auto">
 
@@ -49,6 +49,14 @@
     <li class="nav-item">
 {% endifequal %}
         <a class="nav-link" href="{% url 'goods_duplicates' %}">Дубликаты</a>
+    </li>
+
+{% ifequal view_name "about_view" %}
+    <li class="nav-item active">
+{% else %}
+    <li class="nav-item">
+{% endifequal %}
+        <a class="nav-link" href="{% url 'about_view' %}">О проекте</a>
     </li>
 
     {% if user.is_superuser %}
