@@ -1,0 +1,3 @@
+[submodule "barahl0bot"]
+	path = barahl0bot
+	url = git@github.com:fut33v/barahl0bot.git
