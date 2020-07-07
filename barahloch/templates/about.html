@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load barahloch_extras %}
+
+<html lang="en">
+
+{% include "head.html" with title="О проекте" %}
+
+<body>
+
+{% include "header.html" %}
+
+<div class="content">
+    <div class="m-5 p-3">
+        <p >
+            Этот сайт - база данных Telegram канала <a href="t.me/barahlochannel">@barahlochannel</a> созданного
+            в апреле 2017 с целью консолидации разроненных ВК альбомов-барахолок в одном месте.
+        </p>
+        <p>
+            Идея принадлежала Сане Старостину, делал это всё я - <a href="https://t.me/fut33v">@fut33v</a>.
+        </p>
+        <p>
+            Если хочется поддержать проект (на хостинг) то подписывайтесь на Patreon: <a href="https://www.patreon.com/barahlochannel">barahlochannel</a>
+        </p>
+
+        <p>
+            Исходный код на github:
+            <ul>
+                <li><a href="https://github.com/fut33v/barahl0bot">barahl0bot</a></li>
+                <li><a href="https://github.com/fut33v/django_barahlochannel">django_barahlochannel</a></li>
+            </ul>
+
+            <span>API:</span>
+            <a href="/api">/api</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

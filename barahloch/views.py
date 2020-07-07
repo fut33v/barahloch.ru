@@ -395,6 +395,10 @@ def logout_view(request):
     return redirect('/')
 
 
+def about_view(request):
+    return render(request, 'about.html', {})
+
+
 @login_required
 def profile_view(request):
     if request.POST:

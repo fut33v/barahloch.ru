@@ -39,6 +39,8 @@ urlpatterns = [
     path('login', views.login_view, name='login_view'),
     path('logout', views.logout_view, name='logout_view'),
 
+    path('about', views.about_view, name='about_view'),
+
     path('adminka', views.admin_view, name='admin_view'),
     path('adminka/hidden_goods', views.admin_hidden_goods, name='admin_hidden_goods'),
     path('adminka/sold_goods', views.admin_sold_goods, name='admin_sold_goods'),

@@ -88,8 +88,8 @@ class ShippingEnum(Enum):
 
 class ProductStateEnum(Enum):
     SHOW = 'в продаже'
-    SOLD = 'продано'
-    HIDDEN = 'скрыт'
+    SOLD = 'продано/снято с продажи'
+    HIDDEN = 'скрыт админом'
 
 
 STATE_CHOICES = [(c.name, c.value) for c in ProductStateEnum]
