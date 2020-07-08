@@ -1,4 +1,4 @@
-from .models import VkSellers, VkGoods, Albums, Cities, TgSellers, TgGoods
+from .models import VkSellers, VkGoods, Albums, Cities, TgSellers
 from rest_framework import serializers
 
 
@@ -33,11 +33,4 @@ class VkGoodsSerializer(serializers.HyperlinkedModelSerializer):
                   'descr', 'comments',
                   'hash', 'date', 'state', 'photo_link', 'photo_preview']
 
-
-class TgGoodsSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TgGoods
-        fields = ['url', 'tg_user_id', 'tg_post_id',
-                  'caption', 'descr',
-                  'hash', 'date', 'state', 'photo_link', 'price', 'currency', 'category', 'ship']
 

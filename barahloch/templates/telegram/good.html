@@ -46,16 +46,19 @@
     {% endif %}
     <p>
         <h4 class="text-break">{{ g.caption }}</h4>
-        <h3>{{ g.price }} {{g.currency}}</h3>
+        {% if g.price_rub %}
+            <h3>{{ g.price_rub }} RUB </h3>
+        {% else %}
+            <h3>{{ g.price_str }} </h3>
+        {% endif %}
     </p>
     <p>
-        <b>Категория: </b>
-        <a href="{% url 'telegram_goods_category' category=g.category %}">
-            {{ g.get_category_display }}
-        </a>
     </p>
     <p>
-        <b>Город: </b> {{ g.tg_user.city.title }}, отправка: {{ g.get_ship_display|lower }}
+        <b>Город: </b> {{ g.tg_user.city.title }}
+        {% if g.ship %}
+        , отправка: {{ g.get_ship_display|lower }}
+        {% endif %}
     </p>
     <p>
     </p>

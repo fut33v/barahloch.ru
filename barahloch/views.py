@@ -11,8 +11,8 @@ from django.contrib.postgres.search import SearchVector
 from social_django.models import UserSocialAuth
 
 from . import context_processors
-from .models import VkSellers, VkGoods, Albums, Groups, Cities, TgGoods, TgSellers, ProductStateEnum
-from .serializers import VkSellersSerializer, VkGoodsSerializer, AlbumsSerializer, CitiesSerializer, TgSellersSerializer, TgGoodsSerializer
+from .models import VkSellers, VkGoods, Albums, Groups, Cities, TgSellers, ProductStateEnum, TgCyclingmarket
+from .serializers import VkSellersSerializer, VkGoodsSerializer, AlbumsSerializer, CitiesSerializer, TgSellersSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, SAFE_METHODS
@@ -35,8 +35,8 @@ def process_product_buttons(request):
         if not product_id:
             return
         try:
-            product = TgGoods.objects.get(tg_post_id=product_id)
-        except TgGoods.DoesNotExist:
+            product = TgCyclingmarket.objects.get(tg_post_id=product_id)
+        except TgCyclingmarket.DoesNotExist:
             product = None
 
     elif product_type == 'vkontakte':
@@ -59,8 +59,8 @@ def process_product_buttons(request):
     products = None
     if isinstance(product, VkGoods):
         products = VkGoods.objects.filter(hash=product.hash)
-    elif isinstance(product, TgGoods):
-        products = TgGoods.objects.filter(hash=product.hash)
+    elif isinstance(product, TgCyclingmarket):
+        products = TgCyclingmarket.objects.filter(hash=product.hash)
 
     if not products:
         return
@@ -100,7 +100,7 @@ def get_city_goods(city_id):
     tg_sellers = TgSellers.objects.filter(city_id=city_id)
 
     vk_goods = VkGoods.objects.filter(seller_id__in=vk_sellers, state='SHOW').order_by('-date')
-    tg_goods = TgGoods.objects.filter(tg_user_id__in=tg_sellers, state='SHOW').order_by('-date')
+    tg_goods = TgCyclingmarket.objects.filter(tg_user_id__in=tg_sellers, state='SHOW').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -114,7 +114,7 @@ def get_city_sellers(city_id):
     vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
 
     tg_sellers = TgSellers.objects.filter(city_id=city_id)
-    tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
+    tg_sellers = tg_sellers.annotate(counter=Count('tgcyclingmarket')).order_by('-counter')
 
     sellers = list(chain(tg_sellers, vk_sellers))
 
@@ -131,7 +131,7 @@ def get_user_goods(request):
     vk_goods = []
 
     if tg_user_id:
-        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+        tg_goods = TgCyclingmarket.objects.filter(tg_user_id=tg_user_id).order_by('-date')
     if vk_user_id:
         vk_goods = VkGoods.objects.filter(seller_id=vk_user_id).order_by('-date')
 
@@ -160,10 +160,10 @@ def get_all_seller_goods(vk_user_id=None, tg_user_id=None):
             except UserSocialAuth.DoesNotExist:
                 tg_user = None
             if tg_user:
-                tg_goods = TgGoods.objects.filter(tg_user_id=tg_user.uid).order_by('-date')
+                tg_goods = TgCyclingmarket.objects.filter(tg_user_id=tg_user.uid).order_by('-date')
 
     elif tg_user_id:
-        tg_goods = TgGoods.objects.filter(tg_user_id=tg_user_id).order_by('-date')
+        tg_goods = TgCyclingmarket.objects.filter(tg_user_id=tg_user_id).order_by('-date')
         try:
             tg_user = UserSocialAuth.objects.get(provider='telegram', uid=tg_user_id)
         except UserSocialAuth.DoesNotExist:
@@ -188,7 +188,7 @@ def sellers_list(request):
     vk_sellers = VkSellers.objects.filter(vk_id__in=sellers_for_goods).order_by('vk_id')
     vk_sellers = vk_sellers.annotate(counter=Count('vkgoods')).order_by('-counter')
 
-    tg_sellers = TgSellers.objects.all().annotate(counter=Count('tggoods')).order_by('-counter')
+    tg_sellers = TgSellers.objects.all().annotate(counter=Count('tgcyclingmarket')).order_by('-counter')
 
     sellers = list(chain(tg_sellers, vk_sellers))
 
@@ -252,10 +252,11 @@ def goods_list(request):
     if 'query' in request.GET:
         query = request.GET.get('query')
         vk_goods = VkGoods.objects.annotate(search=SearchVector('descr', 'comments'),).filter(search=query)
-        tg_goods = TgGoods.objects.annotate(search=SearchVector('caption', 'descr'),).filter(search=query)
+        tg_goods = TgCyclingmarket.objects.annotate(search=SearchVector('caption', 'descr'),).filter(search=query)
     else:
         vk_goods = VkGoods.objects.filter(state='SHOW').order_by('-date')
-        tg_goods = TgGoods.objects.filter(state='SHOW').order_by('-date')
+        tg_goods = TgCyclingmarket.objects.filter(state='SHOW').order_by('-date')
+        # tg_goods = TgCyclingmarket.objects.filter(state='SHOW').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -273,7 +274,7 @@ def goods_list(request):
 @process_product_buttons_decorator
 def goods_hash(request, photo_hash):
     vk_goods = VkGoods.objects.filter(hash=photo_hash).order_by('-date')
-    tg_goods = TgGoods.objects.filter(hash=photo_hash).order_by('-date')
+    tg_goods = TgCyclingmarket.objects.filter(hash=photo_hash).order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -335,7 +336,7 @@ def albums_list(request):
 
 @process_product_buttons_decorator
 def telegram_goods_list(request):
-    goods = TgGoods.objects.all().order_by('-date')
+    goods = TgCyclingmarket.objects.all().order_by('-date')
 
     paginator = Paginator(goods, 11*3)
     page_number = request.GET.get('page')
@@ -344,13 +345,13 @@ def telegram_goods_list(request):
 
 
 def telegram_good_detail(request, tg_post_id):
-    good = get_object_or_404(TgGoods, tg_post_id=tg_post_id)
+    good = get_object_or_404(TgCyclingmarket, tg_post_id=tg_post_id)
     return render(request, 'telegram/good_detail.html', {'good': good})
 
 
 @process_product_buttons_decorator
 def telegram_goods_category(request, category):
-    goods = TgGoods.objects.filter(category=category).order_by('-date')
+    goods = TgCyclingmarket.objects.filter(category=category).order_by('-date')
 
     paginator = Paginator(goods, 11 * 3)
     page_number = request.GET.get('page')
@@ -455,7 +456,7 @@ def admin_view(request):
 def admin_hidden_goods(request):
 
     vk_goods = VkGoods.objects.filter(state='HIDDEN').order_by('-date')
-    tg_goods = TgGoods.objects.filter(state='HIDDEN').order_by('-date')
+    tg_goods = TgCyclingmarket.objects.filter(state='HIDDEN').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -472,7 +473,7 @@ def admin_hidden_goods(request):
 def admin_sold_goods(request):
 
     vk_goods = VkGoods.objects.filter(state='SOLD').order_by('-date')
-    tg_goods = TgGoods.objects.filter(state='SOLD').order_by('-date')
+    tg_goods = TgCyclingmarket.objects.filter(state='SOLD').order_by('-date')
 
     goods = list(chain(tg_goods, vk_goods))
     goods.sort(key=lambda g: g.date, reverse=True)
@@ -521,17 +522,18 @@ class TgSellersViewSet(viewsets.ModelViewSet):
     Продавцы из Telegram.
     """
     permission_classes = [ReadAnyWriteAdmin]
-    queryset = TgSellers.objects.annotate(counter=Count('tggoods')).order_by('-counter')
+    # queryset = TgSellers.objects.annotate(counter=Count('tgcyclingmarket')).order_by('-counter')
+    queryset = TgSellers.objects
     serializer_class = TgSellersSerializer
 
-    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
-    def goods(self, request, pk=None):
-        queryset = TgGoods.objects.filter(tg_user_id=pk).order_by('-date')
-        serializer_context = {
-            'request': request,
-        }
-        serializer = TgGoodsSerializer(queryset, many=True, context=serializer_context)
-        return Response(serializer.data)
+    # @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
+    # def goods(self, request, pk=None):
+    #     queryset = TgCyclingmarket.objects.filter(tg_user_id=pk).order_by('-date')
+    #     serializer_context = {
+    #         'request': request,
+    #     }
+    #     serializer = TgCyclingmarketSerializer(queryset, many=True, context=serializer_context)
+    #     return Response(serializer.data)
 
 
 class VkGoodsViewSet(viewsets.ModelViewSet):
@@ -541,15 +543,6 @@ class VkGoodsViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadAnyWriteAdmin]
     queryset = VkGoods.objects.exclude(state='HIDDEN').order_by('-date')
     serializer_class = VkGoodsSerializer
-
-
-class TgGoodsViewSet(viewsets.ModelViewSet):
-    """
-    Товары из Telegram.
-    """
-    permission_classes = [ReadAnyWriteAdmin]
-    queryset = TgGoods.objects.exclude(state='HIDDEN').order_by('-date')
-    serializer_class = TgGoodsSerializer
 
 
 class AlbumsViewSet(viewsets.ModelViewSet):
@@ -575,7 +568,7 @@ class CitiesViewSet(viewsets.ModelViewSet):
         serializer_context = {
             'request': request,
         }
-        serializer = TgGoodsSerializer(city_goods, many=True, context=serializer_context)
+        serializer = TgCyclingmarketSerializer(city_goods, many=True, context=serializer_context)
         return Response(serializer.data)
 
     @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='vk-sellers', url_name='city_vk_sellers')
@@ -592,7 +585,7 @@ class CitiesViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='tg-sellers', url_name='city_tg_sellers')
     def tg_sellers(self, request, pk=None):
         tg_sellers = TgSellers.objects.filter(city_id=pk)
-        tg_sellers = tg_sellers.annotate(counter=Count('tggoods')).order_by('-counter')
+        tg_sellers = tg_sellers.annotate(counter=Count('tgcyclingmarket')).order_by('-counter')
         serializer_context = {
             'request': request,
         }

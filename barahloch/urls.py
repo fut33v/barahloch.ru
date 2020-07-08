@@ -10,7 +10,6 @@ router.APIRootView.permission_classes = [views.ReadAnyWriteAdmin]
 router.register(r'vk_sellers', views.VkSellerViewSet)
 router.register(r'tg_sellers', views.TgSellersViewSet)
 router.register(r'vk_goods', views.VkGoodsViewSet)
-router.register(r'tg_goods', views.TgGoodsViewSet)
 
 router.register(r'albums', views.AlbumsViewSet)
 router.register(r'cities', views.CitiesViewSet)

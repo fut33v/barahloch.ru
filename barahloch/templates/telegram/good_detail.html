@@ -13,22 +13,22 @@
 <div class="content">
 
     <h1 class="text-break">
-        <a href="{% url 'telegram_goods_category' category=good.category %}">
-            {{ good.get_category_display }}
-        </a>
-        /
         {{ good.caption }}
     </h1>
     <h5> {{ good.date }} </h5>
 
     {% include "goods/good_state.html" with g=good%}
 
-    <img class="good-detail-img rounded" src="{{good.photo_link}}"/>
+    <img class="good-detail-img rounded" src="{{good.get_photo}}"/>
 
     <div class="mt-2">
-        <h2>
-            {{ good.price }} {{good.currency}}
-        </h2>
+
+        {% if good.price_rub %}
+        <h3>{{ good.price_rub }} RUB </h3>
+        {% else %}
+        <h3>{{ good.price_str }} </h3>
+        {% endif %}
+
         <p>
             <b>Продавец:</b>
             {{good.tg_user.full_name}}
@@ -45,6 +45,7 @@
             <b>Город: </b> {{ good.tg_user.city.title }} / {{ good.get_ship_display|lower }}
         </p>
         <p class="text-break"> {{ good.descr|urlizetrunc:30|truncatewords_html:42|safe }} </p>
+
     </div>
 
     <div class="mt-2">
