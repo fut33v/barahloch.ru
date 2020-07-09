@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from .celery_app import app
 from .tasks_logic import BarahlochTasksLogic
 
-app.config_from_object('celeryconfig')
+app.config_from_object('celery_barahloch.celeryconfig')
 
 
 @app.task

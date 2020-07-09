@@ -4,15 +4,15 @@ import telegram.ext
 import telegram.error
 
 from barahl0bot.vkontakte import VkontakteInfoGetter
-from barahl0bot.settings import Barahl0botSettings
-from barahl0bot import database
+from barahl0bot.database import PostgreBarahlochDatabase
 from barahl0bot.structures import Product
+from barahl0bot.settings import Barahl0botSettings
 
 
 class BarahlochTasksLogic:
     _settings: Barahl0botSettings
     _vk_getter: VkontakteInfoGetter
-    _database: database.PostgreBarahlochDatabase
+    _database: PostgreBarahlochDatabase
     _telegram_bot: telegram.Bot
 
     @staticmethod
@@ -23,7 +23,7 @@ class BarahlochTasksLogic:
         BarahlochTasksLogic._settings = Barahl0botSettings(settings_filename)
         settings = BarahlochTasksLogic._settings
         BarahlochTasksLogic._vk_getter = VkontakteInfoGetter(settings.token_vk)
-        BarahlochTasksLogic._database = database.get_database(settings.dbms, settings.channel)
+        BarahlochTasksLogic._database = PostgreBarahlochDatabase(settings.channel)
         BarahlochTasksLogic._telegram_bot = telegram.Bot(token=settings.token_telegram)
 
     @staticmethod

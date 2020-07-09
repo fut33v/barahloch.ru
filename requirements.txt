@@ -6,3 +6,6 @@ django-filter
 social-auth-app-django
 python-telegram-bot
 celery
+redis
+vk_api
+

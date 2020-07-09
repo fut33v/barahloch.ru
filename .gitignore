@@ -90,3 +90,9 @@ local_settings.py
 
 .env
 db.sqlite3
+*.swp
+
+celerybeat-schedule
+celerybeat.pid
+barahlochannel.json
+static
