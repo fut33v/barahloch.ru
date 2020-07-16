@@ -1,4 +1,4 @@
-Django>=3.0.7
+Django>=3.0.8
 psycopg2>=2.8.5
 django-environ
 djangorestframework
@@ -7,5 +7,5 @@ social-auth-app-django
 python-telegram-bot
 celery
 redis
-vk_api
+vk-api
 
