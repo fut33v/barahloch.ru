@@ -86,7 +86,7 @@ def process_product_buttons(request):
         p.save()
 
         if product_type == 'vkontakte' and state == ProductStateEnum.HIDDEN.name:
-            tasks.delete_good_in_telegram(p.tg_post_id)
+            tasks.delete_good_in_telegram.delay(p.tg_post_id)
 
 
 def process_product_buttons_decorator(func):
