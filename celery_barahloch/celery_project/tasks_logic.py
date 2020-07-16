@@ -3,10 +3,10 @@ import os
 import telegram.ext
 import telegram.error
 
-from barahl0bot.vkontakte import VkontakteInfoGetter
-from barahl0bot.database import PostgreBarahlochDatabase
-from barahl0bot.structures import Product
-from barahl0bot.settings import Barahl0botSettings
+from barahl0bot.bullshit.vkontakte import VkontakteInfoGetter
+from barahl0bot.bullshit.database import PostgreBarahlochDatabase
+from barahl0bot.bullshit.structures import Product
+from barahl0bot.bullshit.settings import Barahl0botSettings
 
 
 class BarahlochTasksLogic:
@@ -58,7 +58,3 @@ class BarahlochTasksLogic:
     def set_good_sold(owner_id: int, photo_id: int):
         BarahlochTasksLogic._database.set_good_sold(owner_id, photo_id)
 
-
-if __name__ == '__main__':
-    BarahlochTasksLogic.init('../settings.json')
-    BarahlochTasksLogic.update_good_telegram(7497122,457249746)
