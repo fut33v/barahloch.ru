@@ -39,5 +39,10 @@ def mark_good_as_sold(owner_id, photo_id):
 
 
 @app.task
+def delete_good_in_telegram(post_id):
+    BarahlochTasksLogic.delete_post_telegram(post_id)
+
+
+@app.task
 def set_good_sold_in_telegram(owner_id, photo_id):
     return BarahlochTasksLogic.update_good_telegram(owner_id, photo_id)

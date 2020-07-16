@@ -18,6 +18,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from celery_barahloch.celery_project import tasks
 
 
 def process_product_buttons(request):
@@ -83,7 +84,9 @@ def process_product_buttons(request):
     for p in products:
         p.state = state
         p.save()
-    # product.save()
+
+        if product_type == 'vkontakte' and state == ProductStateEnum.HIDDEN.name:
+            tasks.delete_good_in_telegram(p.tg_post_id)
 
 
 def process_product_buttons_decorator(func):

@@ -19,7 +19,6 @@ class BarahlochTasksLogic:
     def init(settings_filename: str):
         if not os.path.exists(settings_filename):
             return
-        # global _VK_GETTER, _SETTINGS, _DATABASE, _TELEGRAM_BOT
         BarahlochTasksLogic._settings = Barahl0botSettings(settings_filename)
         settings = BarahlochTasksLogic._settings
         BarahlochTasksLogic._vk_getter = VkontakteInfoGetter(settings.token_vk)
@@ -44,6 +43,11 @@ class BarahlochTasksLogic:
         except telegram.error.TelegramError as te:
             # _LOGGER.warning(te)
             return te.message
+
+    @staticmethod
+    def delete_post_telegram(post_id: int):
+        channel = BarahlochTasksLogic._settings.channel
+        BarahlochTasksLogic._telegram_bot.delete_message(chat_id='@'+channel, message_id=post_id)
 
     @staticmethod
     def get_goods_show_ids(filter_days_down_limit, filter_days_up_limit):
