@@ -15,7 +15,7 @@
                 {% else %}
             <li class="nav-item">
                 {% endifequal %}
-                <a class="nav-link" href="{% url 'admin_view' %}">Пользователи<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{% url 'admin_view' %}"><span class="sr-only">(current)</span></a>
             </li>
 
             {% ifequal view_name "admin_hidden_goods" %}
@@ -34,6 +34,9 @@
                 <a class="nav-link" href="{% url 'admin_sold_goods' %}">Проданные товары<span class="sr-only">(current)</span></a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="https://flower.barahloch.ru" target="_blank">Flower</a>
+            </li>
 
         </ul>
     </nav>
