@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timezone
+import pytz
 
 import telegram.ext
 import telegram.error
@@ -48,6 +50,19 @@ class BarahlochTasksLogic:
     def delete_post_telegram(post_id: int):
         channel = BarahlochTasksLogic._settings.channel
         BarahlochTasksLogic._telegram_bot.delete_message(chat_id='@'+channel, message_id=post_id)
+
+    @staticmethod
+    def delete_good_in_telegram(owner_id: int, photo_id):
+        p = BarahlochTasksLogic._database.get_product_by_owner_photo_id(owner_id, photo_id)
+        if not p:
+            return
+        if not p.date:
+            return
+        tz = pytz.timezone('Europe/Moscow')
+        diff = datetime.now(tz) - p.date
+        if diff.days > 2:
+            return
+        BarahlochTasksLogic.delete_post_telegram(p.tg_post_id)
 
     @staticmethod
     def get_goods_show_ids(filter_days_down_limit, filter_days_up_limit):

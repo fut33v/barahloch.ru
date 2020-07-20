@@ -24,6 +24,7 @@ def get_old_goods_and_mark_as_sold():
     goods = BarahlochTasksLogic.get_goods_show_ids(filter_days_down_limit=9999, filter_days_up_limit=180)
     for g in goods:
         mark_good_as_sold.delay(g[0], g[1])
+        delete_good_in_telegram.delay(g[0], g[1])
 
 
 @app.task
@@ -31,6 +32,7 @@ def check_good_for_sold_and_mark_as_sold_if_so(owner_id, photo_id):
     sold = BarahlochTasksLogic.check_is_sold(owner_id, photo_id)
     if sold:
         mark_good_as_sold.delay(owner_id, photo_id)
+        delete_good_in_telegram.delay(owner_id, photo_id)
 
 
 @app.task
@@ -39,8 +41,13 @@ def mark_good_as_sold(owner_id, photo_id):
 
 
 @app.task
-def delete_good_in_telegram(post_id):
+def delete_post_in_telegram(post_id):
     BarahlochTasksLogic.delete_post_telegram(post_id)
+
+
+@app.task
+def delete_good_in_telegram(owner_id, photo_id):
+    BarahlochTasksLogic.delete_good_in_telegram(owner_id, photo_id)
 
 
 @app.task
