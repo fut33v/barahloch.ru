@@ -529,15 +529,6 @@ class TgSellersViewSet(viewsets.ModelViewSet):
     queryset = TgSellers.objects
     serializer_class = TgSellersSerializer
 
-    # @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
-    # def goods(self, request, pk=None):
-    #     queryset = TgCyclingmarket.objects.filter(tg_user_id=pk).order_by('-date')
-    #     serializer_context = {
-    #         'request': request,
-    #     }
-    #     serializer = TgCyclingmarketSerializer(queryset, many=True, context=serializer_context)
-    #     return Response(serializer.data)
-
 
 class VkGoodsViewSet(viewsets.ModelViewSet):
     """
@@ -564,15 +555,6 @@ class CitiesViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadAnyWriteAdmin]
     queryset = Cities.objects.order_by('id')
     serializer_class = CitiesSerializer
-
-    @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='goods', url_name='seller_goods')
-    def goods(self, request, pk=None):
-        city_goods = get_city_goods(pk)
-        serializer_context = {
-            'request': request,
-        }
-        serializer = TgCyclingmarketSerializer(city_goods, many=True, context=serializer_context)
-        return Response(serializer.data)
 
     @action(methods=['get'], detail=True, permission_classes=[ReadOnly], url_path='vk-sellers', url_name='city_vk_sellers')
     def vk_sellers(self, request, pk=None):
